@@ -1,5 +1,5 @@
 
-export { JestEnvironment } from './jest/jest-environment';
+export { createJestPuppeteerEnvironment } from './jest/jest-environment';
 export { jestPreprocessor } from './jest/jest-preprocessor';
 export { jestSetupTestFramework } from './jest/jest-setup-test';
 export { mockDocument, mockWindow } from './mocks';

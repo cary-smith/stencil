@@ -4,13 +4,13 @@ import { createFsWatcher } from './node-fs-watcher';
 import { createDom } from './node-dom';
 import { loadConfigFile } from './node-config';
 import { NodeFs } from './node-fs';
+import { NodeLazyRequire } from './node-lazy-require';
+import { NodeResolveModule } from './node-resolve-module';
 import { NodeStorage } from './node-storage';
 import { normalizePath } from '../../compiler/util';
 import { WorkerManager } from './worker/index';
 
-
 import * as crypto from 'crypto';
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
@@ -23,8 +23,9 @@ export class NodeSystem implements d.StencilSystem {
   private sysUtil: any;
   private sysWorker: WorkerManager;
   private typescriptPackageJson: d.PackageJsonData;
-  private resolveModuleCache: { [cacheKey: string]: string } = {};
   private destroys: Function[] = [];
+  private nodeLazyRequire: NodeLazyRequire;
+  private nodeResolveModule: NodeResolveModule;
   storage: NodeStorage;
 
   fs: d.FileSystem;
@@ -33,6 +34,8 @@ export class NodeSystem implements d.StencilSystem {
   constructor(fs?: d.FileSystem) {
     this.fs = fs || new NodeFs();
     this.path = path;
+    this.nodeResolveModule = new NodeResolveModule();
+    this.storage = new NodeStorage(this.fs);
 
     this.packageDir = path.join(__dirname, '..', '..', '..');
     this.distDir = path.join(this.packageDir, 'dist');
@@ -50,8 +53,6 @@ export class NodeSystem implements d.StencilSystem {
     } catch (e) {
       throw new Error(`unable to resolve "typescript" from: ${this.packageDir}`);
     }
-
-    this.storage = new NodeStorage(this.fs);
   }
 
   initWorkers(maxConcurrentWorkers: number, maxConcurrentTasksPerWorker: number) {
@@ -184,6 +185,13 @@ export class NodeSystem implements d.StencilSystem {
     return config;
   }
 
+  get lazyRequire() {
+    if (!this.nodeLazyRequire) {
+      this.nodeLazyRequire = new NodeLazyRequire(this.nodeResolveModule, this.sysUtil.semver, this.packageJsonData);
+    }
+    return this.nodeLazyRequire;
+  }
+
   minifyCss(input: string, filePath?: string, opts: any = {}) {
     return this.sysWorker.run('minifyCss', [input, filePath, opts]);
   }
@@ -226,41 +234,7 @@ export class NodeSystem implements d.StencilSystem {
   }
 
   resolveModule(fromDir: string, moduleId: string) {
-    const cacheKey = `${fromDir}:${moduleId}`;
-    if (this.resolveModuleCache[cacheKey]) {
-      return this.resolveModuleCache[cacheKey];
-    }
-
-    const Module = require('module');
-
-    fromDir = path.resolve(fromDir);
-    const fromFile = path.join(fromDir, 'noop.js');
-
-    let dir = Module._resolveFilename(moduleId, {
-      id: fromFile,
-      filename: fromFile,
-      paths: Module._nodeModulePaths(fromDir)
-    });
-
-    const root = path.parse(fromDir).root;
-    let packageJsonFilePath: any;
-
-    while (dir !== root) {
-      dir = path.dirname(dir);
-      packageJsonFilePath = path.join(dir, 'package.json');
-
-      try {
-        fs.accessSync(packageJsonFilePath);
-      } catch (e) {
-        continue;
-      }
-
-      this.resolveModuleCache[cacheKey] = packageJsonFilePath;
-
-      return packageJsonFilePath;
-    }
-
-    throw new Error(`error loading "${moduleId}" from "${fromDir}"`);
+    return this.nodeResolveModule.resolveModule(fromDir, moduleId);
   }
 
   get rollup() {

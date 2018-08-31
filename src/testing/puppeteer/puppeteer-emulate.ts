@@ -14,7 +14,7 @@ export async function setScreenshotEmulateData(userEmulateConfig: d.ScreenshotEm
 
   if (typeof userEmulateConfig.device === 'string') {
     try {
-      const deviceDescriptors = require('puppeteer/DeviceDescriptors');
+      const deviceDescriptors = require(env.__STENCIL_PUPPETEER_MODULE__ + '/DeviceDescriptors');
 
       const puppeteerEmulateOpts = deviceDescriptors[userEmulateConfig.device] as puppeteer.EmulateOptions;
       if (!puppeteerEmulateOpts) {

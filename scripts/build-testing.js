@@ -30,6 +30,7 @@ if (success) {
       input: ENTRY_FILE,
       external: [
         'fs',
+        'jest-environment-node',
         'os',
         'path',
         'puppeteer',

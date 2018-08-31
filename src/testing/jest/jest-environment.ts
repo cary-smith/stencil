@@ -1,47 +1,56 @@
 import * as d from '../../declarations';
 import { connectBrowser, disconnectBrowser, newBrowserPage } from '../puppeteer/puppeteer-browser';
-const NodeEnvironment = require('jest-environment-node');
 
 
-export class JestEnvironment extends NodeEnvironment {
-  private global: d.JestEnvironmentGlobal;
-  private browser: any = null;
-  private pages: any[] = [];
+export function createJestPuppeteerEnvironment() {
+
+  const jestEnvNodeModulePath = (process.env as d.E2EProcessEnv).__STENCIL_JEST_ENVIRONMENT_NODE_MODULE__ || 'jest-environment-node';
+  const NodeEnvironment = require(jestEnvNodeModulePath);
 
 
-  constructor(config: any) {
-    super(config);
-  }
+  const JestEnvironment = class extends NodeEnvironment {
+    global: d.JestEnvironmentGlobal;
+    browser: any = null;
+    pages: any[] = [];
 
-  async setup() {
-    this.global.__NEW_TEST_PAGE__ = this.newPuppeteerPage.bind(this);
-  }
 
-  async newPuppeteerPage() {
-    if (!this.browser) {
-      // load the browser and page on demand
-      this.browser = await connectBrowser();
+    constructor(config: any) {
+      super(config);
     }
 
-    if (!this.browser) {
-      return null;
+    async setup() {
+      this.global.__NEW_TEST_PAGE__ = this.newPuppeteerPage.bind(this);
     }
 
-    const page = await newBrowserPage(this.browser);
+    async newPuppeteerPage() {
+      if (!this.browser) {
+        // load the browser and page on demand
+        this.browser = await connectBrowser();
+      }
 
-    this.pages.push(page);
+      if (!this.browser) {
+        return null;
+      }
 
-    return page;
-  }
+      const page = await newBrowserPage(this.browser);
 
-  async teardown() {
-    await super.teardown();
+      this.pages.push(page);
 
-    await disconnectBrowser(this.browser, this.pages);
+      return page;
+    }
 
-    this.pages.length = 0;
+    async teardown() {
+      await super.teardown();
 
-    this.browser = null;
-  }
+      await disconnectBrowser(this.browser, this.pages);
 
+      this.pages.length = 0;
+
+      this.browser = null;
+    }
+
+  };
+
+
+  return JestEnvironment;
 }

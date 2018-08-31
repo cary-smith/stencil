@@ -37,6 +37,9 @@ export interface E2EProcessEnv {
   __STENCIL_SCREENSHOTS__?: 'true';
   __STENCIL_SCREENSHOT_IMAGES_DIR__?: string;
   __STENCIL_SCREENSHOT_DATA_DIR__?: string;
+
+  __STENCIL_PUPPETEER_MODULE__?: string;
+  __STENCIL_JEST_ENVIRONMENT_NODE_MODULE__?: string;
 }
 
 

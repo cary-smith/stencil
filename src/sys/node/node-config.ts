@@ -1,6 +1,7 @@
 import * as d from '../../declarations';
 import * as path from 'path';
 import * as ts from 'typescript';
+import { normalizePath } from '../../compiler/util';
 
 
 export function loadConfigFile(fs: d.FileSystem, configPath: string, process?: NodeJS.Process) {
@@ -46,7 +47,7 @@ export function loadConfigFile(fs: d.FileSystem, configPath: string, process?: N
     config.configPath = configPath;
 
     if (configPath) {
-      config.rootDir = path.dirname(configPath);
+      config.rootDir = normalizePath(path.dirname(configPath));
     }
 
   } else {
@@ -57,7 +58,7 @@ export function loadConfigFile(fs: d.FileSystem, configPath: string, process?: N
     };
   }
 
-  config.cwd = cwd;
+  config.cwd = normalizePath(cwd);
 
   return config;
 }
