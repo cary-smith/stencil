@@ -1,0 +1,2 @@
+/*! Built with http://stenciljs.com */
+const{h:n}=window.App;function t(n,t){n.addEventListener("statusTap",()=>{t.read(()=>{const e=n.innerWidth,o=n.innerHeight,i=n.document.elementFromPoint(e/2,o/2);if(!i)return;const r=i.closest("ion-content");r&&r.componentOnReady().then(()=>{t.write(()=>{r.scrollToTop(300)})})})})}export{t as startStatusTap};

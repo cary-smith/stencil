@@ -110,6 +110,17 @@ describe('parseFlags', () => {
     expect(flags.cache).toBe(null);
   });
 
+  it('should parse --compare', () => {
+    process.argv[2] = '--compare';
+    const flags = parseFlags(process);
+    expect(flags.compare).toBe(true);
+  });
+
+  it('should not parse --compare', () => {
+    const flags = parseFlags(process);
+    expect(flags.compare).toBe(null);
+  });
+
   it('should override --config with second --config', () => {
     process.argv[2] = '--config';
     process.argv[3] = '/config-1.js';
@@ -188,6 +199,12 @@ describe('parseFlags', () => {
     process.argv[2] = '--docs-json=some/path/docs.json';
     const flags = parseFlags(process);
     expect(flags.docsJson).toBe('some/path/docs.json');
+  });
+
+  it('should parse --e2e', () => {
+    process.argv[2] = '--e2e';
+    const flags = parseFlags(process);
+    expect(flags.e2e).toBe(true);
   });
 
   it('should parse --es5', () => {
@@ -278,6 +295,12 @@ describe('parseFlags', () => {
     expect(flags.root).toBe('custom-www');
   });
 
+  it('should parse --screenshot', () => {
+    process.argv[2] = '--screenshot';
+    const flags = parseFlags(process);
+    expect(flags.screenshot).toBe(true);
+  });
+
   it('should parse --serve', () => {
     process.argv[2] = '--serve';
     const flags = parseFlags(process);
@@ -290,10 +313,34 @@ describe('parseFlags', () => {
     expect(flags.serviceWorker).toBe(true);
   });
 
+  it('should parse --spec', () => {
+    process.argv[2] = '--spec';
+    const flags = parseFlags(process);
+    expect(flags.spec).toBe(true);
+  });
+
   it('should parse --stats', () => {
     process.argv[2] = '--stats';
     const flags = parseFlags(process);
     expect(flags.stats).toBe(true);
+  });
+
+  it('should parse --channel=production', () => {
+    process.argv[2] = '--channel=production';
+    const flags = parseFlags(process);
+    expect(flags.channel).toBe('production');
+  });
+
+  it('should parse --channel production', () => {
+    process.argv[2] = '--channel';
+    process.argv[3] = 'production';
+    const flags = parseFlags(process);
+    expect(flags.channel).toBe('production');
+  });
+
+  it('should not parse --channel', () => {
+    const flags = parseFlags(process);
+    expect(flags.channel).toBe(null);
   });
 
   it('should parse --version', () => {

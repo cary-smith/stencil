@@ -1,0 +1,2 @@
+/*! Built with http://stenciljs.com */
+const{h:t}=window.App;function e(t){const e=new Date(t);let s=e.getUTCFullYear()+"-";return s+=("0"+(e.getUTCMonth()+1)).slice(-2)+"-",s+=("0"+e.getUTCDate()).slice(-2)+" ",s+=("0"+e.getUTCHours()).slice(-2)+":",(s+=("0"+e.getUTCMinutes()).slice(-2)+":")+("0"+e.getUTCSeconds()).slice(-2)}function s(t,e){if(t&&t.startsWith("git+")){let s=t.substring(4);s.endsWith(".git")&&(s=s.substr(0,t.length-4)),s+=`/commit/${e}`}return""}export{s as a,e as b};

@@ -21,6 +21,9 @@ function testPackage(testPkg) {
   var pkgImport = require(pkgPath);
 
   if (testPkg.files) {
+    if (!Array.isArray(pkgJson.files)) {
+      throw new Error(testPkg.packageJson + ' missing "files" property');
+    }
     testPkg.files.forEach(testPkgFile => {
       if (!pkgJson.files.includes(testPkgFile)) {
         throw new Error(testPkg.packageJson + ' missing file ' + testPkgFile);
@@ -53,6 +56,16 @@ function testPackage(testPkg) {
     ]
   },
   {
+    packageJson: '../screenshot/package.json',
+    files: [
+      'app/',
+      'screenshot.connector.default.js'
+    ],
+    exports: [
+      'ScreenshotConnector'
+    ]
+  },
+  {
     packageJson: '../server/package.json',
     exports: [
       'h',
@@ -64,9 +77,21 @@ function testPackage(testPkg) {
   },
   {
     packageJson: '../testing/package.json',
+    files: [
+      'jest.environment.js',
+      'jest.preprocessor.js',
+      'jest.preset.js',
+      'jest.setuptest.js'
+    ],
     exports: [
-      'h',
-      'TestWindow'
+      'JestEnvironment',
+      'jestPreprocessor',
+      'jestSetupTestFramework',
+      'mockDocument',
+      'mockWindow',
+      'newTestPage',
+      'Testing',
+      'transpile'
     ]
   },
   {
@@ -82,6 +107,7 @@ function testPackage(testPkg) {
       "bin/",
       "dist/",
       "compiler/",
+      "screenshot/",
       "server/",
       "sys/",
       "testing/"

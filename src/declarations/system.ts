@@ -9,6 +9,7 @@ export interface StencilSystem {
     version: string;
     typescriptVersion?: string;
     runtime?: string;
+    packageDir?: string;
   };
   copy?(copyTasks: d.CopyTask[]): Promise<d.CopyResults>;
   createDom?(): CreateDom;
@@ -37,7 +38,7 @@ export interface StencilSystem {
     diagnostics?: d.Diagnostic[];
   }>;
   minimatch?(path: string, pattern: string, opts?: any): boolean;
-  open?: (p: string) => Promise<void>;
+  open?: (url: string) => Promise<void>;
   path?: Path;
   requestLatestCompilerVersion?(): Promise<string>;
   resolveModule?(fromDir: string, moduleId: string): string;
@@ -77,6 +78,7 @@ export interface SystemDetails {
   runtime: string;
   runtimeVersion: string;
   release: string;
+  tmpDir: string;
 }
 
 
@@ -150,6 +152,7 @@ export interface PackageJsonData {
   name?: string;
   version?: string;
   main?: string;
+  bin?: {[key: string]: string};
   browser?: string;
   module?: string;
   'jsnext:main'?: string;
@@ -159,6 +162,10 @@ export interface PackageJsonData {
   files?: string[];
   ['dist-tags']: {
     latest: string;
+  };
+  repository?: {
+    type?: string;
+    url?: string;
   };
 }
 

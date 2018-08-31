@@ -6,7 +6,7 @@ export interface Compiler {
   config: d.Config;
   docs(): Promise<void>;
   isValid: boolean;
-  startDevServer(): Promise<{ browserUrl: string }>;
+  startDevServer(): Promise<d.DevServer>;
 }
 
 
@@ -33,6 +33,7 @@ export interface CompilerCtx {
   isActivelyBuilding?: boolean;
   lastBuildConditionalsBrowserEsm?: d.BuildConditionals;
   lastBuildConditionalsBrowserEs5?: d.BuildConditionals;
+  lastBuildConditionalsBrowserSsr?: d.BuildConditionals;
   lastBuildConditionalsEsmEs5?: d.BuildConditionals;
   lastComponentStyleInput?: Map<string, string>;
   lastBuildHadError?: boolean;
