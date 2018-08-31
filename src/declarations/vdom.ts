@@ -1,6 +1,5 @@
 import * as d from '.';
 
-
 export interface Hyperscript {
   (sel: any): VNode;
   (sel: Node, data: VNodeData): VNode;
@@ -12,28 +11,12 @@ export interface Hyperscript {
   (sel: any, data: VNodeData, children: VNode): VNode;
 }
 
-
 declare global {
-  // these must be "var" variables
-  // so that they could be re-declared by
-  // other collections, do not use "const" or "let"
-  // "h" function is global so JSX doesn't throw typescript errors
-  var h: Hyperscript;
+  export var h: Hyperscript;
 }
 
-
-export interface VNode {
-  // using v prefixes largely so closure has no issue property renaming
-  vtag?: string | number | Function;
-  vkey?: string | number;
-  vtext?: string;
-  vchildren?: VNode[];
-  vattrs?: any;
-  vname?: string;
+export interface VNode extends d.FVNode {
   elm?: d.RenderNode;
-  ishost?: boolean;
-  isSlotFallback?: boolean;
-  isSlotReference?: boolean;
 }
 
 
@@ -43,28 +26,9 @@ export interface VNodeData {
   [attrName: string]: any;
 }
 
-export interface ChildNode {
-  vtag?: string | number | Function;
-  vkey?: string | number;
-  vtext?: string;
-  vchildren?: d.VNode[];
-  vattrs?: any;
-  vname?: string;
-}
 
-
-export type PropsType = VNodeProdData | number | string | null;
 export type ChildType = VNode | number | string;
-
-export interface FunctionalUtilities {
-  forEach: (children: d.VNode[], cb: (vnode: d.VNode, index: number, array: d.VNode[]) => void) => void;
-  map: (children: d.VNode[], cb: (vnode: ChildNode, index: number, array: d.VNode[]) => ChildNode) => d.VNode[];
-}
-
-export interface FunctionalComponent<T = {}> {
-  (props: T, children: d.VNode[], utils: FunctionalUtilities): VNode | VNode[];
-}
-
+export type PropsType = VNodeProdData | number | string | null;
 
 /**
  * used by production compiler

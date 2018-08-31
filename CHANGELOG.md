@@ -1,3 +1,80 @@
+<a name="0.12.4"></a>
+## 🏋 [0.12.4](https://github.com/ionic-team/stencil/compare/v0.12.3...v0.12.4) (2018-08-30)
+
+
+### Bug Fixes
+
+* move functional component definitions to file for external builds. ([4e17c9e](https://github.com/ionic-team/stencil/commit/4e17c9e))
+
+
+### Features
+
+* add rollup module info to stats and upgrade rollup. ([b6ee592](https://github.com/ionic-team/stencil/commit/b6ee592))
+
+
+
+<a name="0.12.3"></a>
+## 🎩 [0.12.3](https://github.com/ionic-team/stencil/compare/v0.12.2...v0.12.3) (2018-08-29)
+
+
+### Bug Fixes
+
+* **angular:** promisy types is not longer needed ([d6ba49b](https://github.com/ionic-team/stencil/commit/d6ba49b))
+
+
+
+<a name="0.12.2"></a>
+## 🚖 [0.12.2](https://github.com/ionic-team/stencil/compare/v0.12.2-0...v0.12.2) (2018-08-28)
+
+
+### Bug Fixes
+
+* correct rollup globals plugin to include the correct local path to the globals files. ([cf81429](https://github.com/ionic-team/stencil/commit/cf81429))
+
+
+### Features
+
+* add types to decorators to ensure that they are assigned correctly. ([99d058e](https://github.com/ionic-team/stencil/commit/99d058e))
+
+
+
+<a name="0.12.1"></a>
+## 🤘 [0.12.1](https://github.com/ionic-team/stencil/compare/v0.12.0...v0.12.1) (2018-08-27)
+
+
+### Bug Fixes
+
+* ensure all '@stencil/core' types are changed to './stencil.core' in components.d.ts file. ([638ad47](https://github.com/ionic-team/stencil/commit/638ad47))
+
+
+
+<a name="0.12.0"></a>
+# 🚑 [0.12.0](https://github.com/ionic-team/stencil/compare/v0.12.0-8...v0.12.0) (2018-08-27)
+
+
+### Features
+
+* **compiler:** adds more compiler checks ([6fa63fd](https://github.com/ionic-team/stencil/commit/6fa63fd))
+* **URL:** add URL polyfill for ie11 ([8d07ee9](https://github.com/ionic-team/stencil/commit/8d07ee9))
+
+
+### Bug Fixes
+
+* **angular:** event emitters work programatically ([dabcf5e](https://github.com/ionic-team/stencil/commit/dabcf5e))
+* **angular:** promisify methods ([0ad19de](https://github.com/ionic-team/stencil/commit/0ad19de))
+* **angular:** using Component instead of Directive ([d3b3c80](https://github.com/ionic-team/stencil/commit/d3b3c80))
+* **config:** add esModuleInterop ([2865fae](https://github.com/ionic-team/stencil/commit/2865fae))
+* **escapeCssForJs:** test for string input ([297fa2e](https://github.com/ionic-team/stencil/commit/297fa2e))
+* **method:** remove focus() and blur() from blacklist ([fbcc368](https://github.com/ionic-team/stencil/commit/fbcc368))
+* **angular:** export local element interfaces to be used in angular type definitions. ([fc081a3](https://github.com/ionic-team/stencil/commit/fc081a3))
+* **types:** export StencilComponents from core builds and all import to angular builds. ([#1033](https://github.com/ionic-team/stencil/issues/1033)) ([a8ba582](https://github.com/ionic-team/stencil/commit/a8ba582))
+* **build:** move rollup node globals plugin local to resolve its issue with dynamic imports. ([ce72eb6](https://github.com/ionic-team/stencil/commit/ce72eb6))
+* **build:** do not exclude **/test/** directory from build ([12f650d](https://github.com/ionic-team/stencil/commit/12f650d))
+* **exports:** remap esm exports from collection directory to a local es5 directory. ([dbd8cac](https://github.com/ionic-team/stencil/commit/dbd8cac))
+* **types:** move global type definitions of JSX into a projects component.d.ts file ([#1018](https://github.com/ionic-team/stencil/issues/1018)) ([7e4e501](https://github.com/ionic-team/stencil/commit/7e4e501))
+
+
+
 <a name="0.11.4"></a>
 ## ⛰ [0.11.4](https://github.com/ionic-team/stencil/compare/v0.11.3...v0.11.4) (2018-08-12)
 
