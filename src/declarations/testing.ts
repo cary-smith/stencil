@@ -1,13 +1,20 @@
 
+
 declare global {
   namespace jest {
     interface Matchers<R> {
+      toBeChecked(): void;
       toEqualHtml(html: string): void;
-      toHaveClasses(classlist: string[]): void;
-      toMatchClasses(classlist: string[]): void;
+
+      toHaveAttribute(attributeName: string): void;
       toHaveAttributes(attributes: { [attr: string]: string }): void;
       toMatchAttributes(attributes: { [attr: string]: string }): void;
-      toHaveProperties(properties: { [prop: string]: any }): void;
+
+      toHaveClass(className: string): void;
+      toHaveClasses(classNames: string[]): void;
+      toMatchClasses(classNames: string[]): void;
+
+      toMatchProperties(properties: { [prop: string]: any }): void;
     }
   }
 }
@@ -32,11 +39,13 @@ export interface E2EProcessEnv {
 
   __STENCIL_EMULATE__?: string;
   __STENCIL_BROWSER_URL__?: string;
-  __STENCIL_LOADER_SCRIPT_URL__?: string;
+  __STENCIL_LOADER_URL__?: string;
   __STENCIL_BROWSER_WS_ENDPOINT__?: string;
   __STENCIL_SCREENSHOTS__?: 'true';
   __STENCIL_SCREENSHOT_IMAGES_DIR__?: string;
   __STENCIL_SCREENSHOT_DATA_DIR__?: string;
+
+  __STENCIL_E2E_TESTS__?: 'true';
 
   __STENCIL_PUPPETEER_MODULE__?: string;
   __STENCIL_JEST_ENVIRONMENT_NODE_MODULE__?: string;

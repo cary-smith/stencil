@@ -1,10 +1,9 @@
 import * as d from '../declarations';
 import { completeE2EScreenshots, startE2ESnapshot } from '../screenshot/data-generator';
-import { getLoaderFileName } from '../compiler/app/app-file-naming';
-import { hasError, normalizePath } from '../compiler/util';
+import { getLoaderPath } from '../compiler/app/app-file-naming';
+import { hasError } from '../compiler/util';
 import { runJest, setupJestConfig } from './jest/jest-runner';
 import { startPuppeteerBrowser } from './puppeteer/puppeteer-browser';
-import * as path from 'path';
 import * as puppeteer from 'puppeteer';
 
 
@@ -47,12 +46,16 @@ export class Testing implements d.Testing {
     }
 
     const msg: string[] = [];
+
     if (config.flags.e2e) {
       msg.push('e2e');
+      env.__STENCIL_E2E_TESTS__ = 'true';
     }
+
     if (config.flags.spec) {
       msg.push('spec');
     }
+
     config.logger.info(config.logger.magenta(`testing ${msg.join(' and ')} files`));
 
     const doScreenshots = !!(config.flags.e2e && config.flags.screenshot);
@@ -61,30 +64,39 @@ export class Testing implements d.Testing {
       config.logger.info(config.logger.magenta(`generating screenshots`));
     }
 
-    const startupResults = await Promise.all([
-      compiler.build(),
-      compiler.startDevServer(),
-      startPuppeteerBrowser(config),
-      setupJestConfig(config),
-    ]);
+    const jestEnvNodeModule = config.sys.lazyRequire.getModulePath('jest-environment-node');
+    env.__STENCIL_JEST_ENVIRONMENT_NODE_MODULE__ = jestEnvNodeModule;
+    config.logger.debug(`jest-environment-node: ${jestEnvNodeModule}`);
 
-    const results = startupResults[0];
-    this.devServer = startupResults[1];
-    this.puppeteerBrowser = startupResults[2];
-    this.jestConfigPath = startupResults[3];
+    if (config.flags.e2e) {
+      // e2e tests only
+      // do a build, start a dev server
+      // and spin up a puppeteer browser
+      const startupResults = await Promise.all([
+        compiler.build(),
+        compiler.startDevServer(),
+        startPuppeteerBrowser(config),
+      ]);
 
-    if (!config.watch && hasError(results && results.diagnostics)) {
-      await this.destroy();
-      process.exit(1);
+      const results = startupResults[0];
+      this.devServer = startupResults[1];
+      this.puppeteerBrowser = startupResults[2];
+
+      if (!results || (!config.watch && hasError(results && results.diagnostics))) {
+        await this.destroy();
+        process.exit(1);
+      }
+
+      if (this.devServer) {
+        env.__STENCIL_BROWSER_URL__ = this.devServer.browserUrl;
+        config.logger.debug(`dev server url: ${env.__STENCIL_BROWSER_URL__}`);
+
+        env.__STENCIL_LOADER_URL__ = getLoaderScriptUrl(config, outputTarget, this.devServer.browserUrl);
+        config.logger.debug(`dev server loader: ${env.__STENCIL_LOADER_URL__}`);
+      }
     }
 
-    if (this.devServer) {
-      env.__STENCIL_BROWSER_URL__ = this.devServer.browserUrl;
-      config.logger.debug(`dev server url: ${env.__STENCIL_BROWSER_URL__}`);
-
-      env.__STENCIL_LOADER_SCRIPT_URL__ = getLoaderScriptUrl(config, outputTarget, this.devServer.browserUrl);
-      config.logger.debug(`dev server loader: ${env.__STENCIL_LOADER_SCRIPT_URL__}`);
-    }
+    this.jestConfigPath = await setupJestConfig(config);
 
     let screenshotData: d.E2ESnapshot;
     if (doScreenshots) {
@@ -165,18 +177,7 @@ function getOutputTarget(config: d.Config) {
 
 
 function getLoaderScriptUrl(config: d.Config, outputTarget: d.OutputTargetWww, browserUrl: string) {
-  let buildDir = path.relative(outputTarget.dir, outputTarget.buildDir);
-  buildDir = normalizePath(buildDir);
-
-  if (browserUrl.endsWith('/')) {
-    browserUrl = browserUrl.substring(0, browserUrl.length - 1);
-  }
-  if (buildDir.startsWith('/')) {
-    buildDir = buildDir.substring(1);
-  }
-  if (buildDir.endsWith('/')) {
-    buildDir = buildDir.substring(0, buildDir.length - 1);
-  }
-
-  return `${browserUrl}/${buildDir}/${getLoaderFileName(config)}`;
+  const appLoaderFilePath = getLoaderPath(config, outputTarget);
+  const appLoadUrlPath = config.sys.path.relative(config.rootDir, appLoaderFilePath);
+  return browserUrl + appLoadUrlPath;
 }

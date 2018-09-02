@@ -1,7 +1,7 @@
 import * as pd from './puppeteer-declarations';
 
 
-export async function initPageEvents(page: pd.TestPage) {
+export async function initPageEvents(page: pd.E2EPage) {
   const waitForEvents: pd.WaitForEvent[] = [];
 
   await page.exposeFunction('stencilOnEvent', (browserEvent: pd.BrowserContextEvent) => {
@@ -18,7 +18,7 @@ export async function initPageEvents(page: pd.TestPage) {
 }
 
 
-export function waitForEvent(page: pd.TestPage, waitForEvents: pd.WaitForEvent[], selector: string, eventName: string, opts: pd.WaitForEventOptions) {
+export function waitForEvent(page: pd.E2EPage, waitForEvents: pd.WaitForEvent[], selector: string, eventName: string, opts: pd.WaitForEventOptions) {
   // NODE CONTEXT
   return new Promise<any>(async (resolve, reject) => {
     const timeout = (typeof opts.timeout === 'number' ? opts.timeout : 30000);

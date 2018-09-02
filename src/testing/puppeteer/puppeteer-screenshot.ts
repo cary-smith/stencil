@@ -4,7 +4,7 @@ import * as pd from './puppeteer-declarations';
 import * as puppeteer from 'puppeteer';
 
 
-export function initTestPageScreenshot(page: pd.TestPage) {
+export function initTestPageScreenshot(page: pd.E2EPage) {
   if ((process.env as d.E2EProcessEnv).__STENCIL_SCREENSHOTS__ === 'true') {
     page.e2eScreenshot = screenshot.bind(page, page);
 
@@ -15,7 +15,7 @@ export function initTestPageScreenshot(page: pd.TestPage) {
 }
 
 
-export async function screenshot(page: pd.TestPage, uniqueDescription: string, opts: d.TestScreenshotOptions = {}) {
+export async function screenshot(page: pd.E2EPage, uniqueDescription: string, opts: d.TestScreenshotOptions = {}) {
   const screenshot = await page.screenshot(createPuppeteerScreenshopOptions(opts));
 
   await writeE2EScreenshot(screenshot, uniqueDescription);

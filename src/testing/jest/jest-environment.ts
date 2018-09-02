@@ -19,7 +19,9 @@ export function createJestPuppeteerEnvironment() {
     }
 
     async setup() {
-      this.global.__NEW_TEST_PAGE__ = this.newPuppeteerPage.bind(this);
+      if ((process.env as d.E2EProcessEnv).__STENCIL_E2E_TESTS__ === 'true') {
+        this.global.__NEW_TEST_PAGE__ = this.newPuppeteerPage.bind(this);
+      }
     }
 
     async newPuppeteerPage() {

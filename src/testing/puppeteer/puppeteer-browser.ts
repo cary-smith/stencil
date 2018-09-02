@@ -14,10 +14,6 @@ export async function startPuppeteerBrowser(config: d.Config) {
   env.__STENCIL_PUPPETEER_MODULE__ = puppeteerModulePath;
   config.logger.debug(`puppeteer: ${puppeteerModulePath}`);
 
-  const jestEnvNodeModule = config.sys.lazyRequire.getModulePath('jest-environment-node');
-  env.__STENCIL_JEST_ENVIRONMENT_NODE_MODULE__ = jestEnvNodeModule;
-  config.logger.debug(`jest-environment-node: ${jestEnvNodeModule}`);
-
   const launchOpts: puppeteer.LaunchOptions = {
     ignoreHTTPSErrors: true,
     headless: false
