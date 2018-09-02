@@ -91,12 +91,13 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
     if (this._e2eHandle) {
       await this._e2eHandle.dispose();
       this._e2eHandle = null;
-
-      const index = this.page.e2eElements.indexOf(this);
-      if (index > -1) {
-        this.page.e2eElements.splice(index, 1);
-      }
     }
+
+    const index = this.page.e2eElements.indexOf(this);
+    if (index > -1) {
+      this.page.e2eElements.splice(index, 1);
+    }
+
     this.page = null;
   }
 

@@ -31,7 +31,7 @@ export async function newE2EPage(opts: pd.NewE2EPageOptions = {}) {
     return await getE2EElement(page, lightDomSelector);
   };
 
-  page.waitForQueue = waitForQueue.bind(null, page);
+  page.waitForChanges = waitForChanges.bind(null, page);
 
   page.on('console', consoleMessage);
   page.on('pageerror', pageError);
@@ -201,7 +201,7 @@ async function setPageEmulate(page: pd.E2EPage) {
 }
 
 
-async function waitForQueue(page: pd.E2EPageInternal) {
+async function waitForChanges(page: pd.E2EPageInternal) {
   try {
     if (page.isClosed()) {
       return;

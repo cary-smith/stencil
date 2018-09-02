@@ -1,4 +1,4 @@
-import { newTestPage } from '../../../../dist/testing';
+import { newE2EPage } from '../../../../dist/testing';
 
 
 describe('@Event', () => {
@@ -6,7 +6,7 @@ describe('@Event', () => {
   it('should fire custom event on window', async () => {
     // create a new puppeteer page
     // and load the page with html content
-    const page = await newTestPage({ html: `
+    const page = await newE2EPage({ html: `
       <event-cmp></event-cmp>
     `});
 
@@ -48,7 +48,7 @@ describe('@Event', () => {
   });
 
   it('should fire custom event on document', async () => {
-    const page = await newTestPage({ html: `
+    const page = await newE2EPage({ html: `
       <event-cmp></event-cmp>
     `});
 
@@ -75,7 +75,7 @@ describe('@Event', () => {
   });
 
   it('should fire custom event w/ no options', async () => {
-    const page = await newTestPage({ html: `
+    const page = await newE2EPage({ html: `
       <event-cmp></event-cmp>
     `});
 

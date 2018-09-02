@@ -25,7 +25,7 @@ export interface E2EPage extends puppeteer.Page {
 
   waitForEvent(selector: 'window' | 'document' | string, eventName: string, opts?: WaitForEventOptions): Promise<CustomEvent>;
 
-  waitForQueue(): Promise<void>;
+  waitForChanges(): Promise<void>;
 }
 
 

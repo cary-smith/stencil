@@ -1,14 +1,14 @@
-import { newTestPage, TestPage } from '../../../../dist/testing';
+import { newE2EPage, E2EPage } from '../../../../dist/testing';
 
 
 describe('@Prop', () => {
 
-  let page: TestPage;
+  let page: E2EPage;
   beforeEach(async () => {
     // example showing how new test pages can be
     // created within beforeEach(), then using
     // page.setTestContent() or page.gotoTest()
-    page = await newTestPage();
+    page = await newE2EPage();
   });
 
   it('should set props from property', async () => {
@@ -29,7 +29,7 @@ describe('@Prop', () => {
 
     // we just made a change and now the async queue need to process it
     // make sure the queue does its work before we continue
-    await page.waitForQueue();
+    await page.waitForChanges();
 
     // select the "prop-cmp" element within the page (same as querySelector)
     const shadowRootText = await page.find('prop-cmp').findInShadow('div').getText();

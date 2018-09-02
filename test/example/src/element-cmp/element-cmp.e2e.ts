@@ -1,11 +1,11 @@
-import { newTestPage } from '../../../../dist/testing';
+import { newE2EPage } from '../../../../dist/testing';
 
 
 describe('@Element', () => {
 
   it('should read the host elements attribute', async () => {
     // create a new puppeteer page
-    const page = await newTestPage({ html: `
+    const page = await newE2EPage({ html: `
       <element-cmp host-element-attr="Marty McFly"></element-cmp>
     `});
 

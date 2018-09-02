@@ -1,11 +1,11 @@
-import { newTestPage } from '../../../../dist/testing';
+import { newE2EPage } from '../../../../dist/testing';
 
 
 describe('@Listen', () => {
 
   it('host listener toggles "opened" from "click" event', async () => {
     // create a new puppeteer page
-    const page = await newTestPage({ html: `
+    const page = await newE2EPage({ html: `
       <listen-cmp></listen-cmp>
     `});
 
@@ -15,7 +15,7 @@ describe('@Listen', () => {
 
     // we just made a change and now the async queue need to process it
     // make sure the queue does its work before we continue
-    await page.waitForQueue();
+    await page.waitForChanges();
 
     // test that the value we got from the element's "opened" property is correct
     expect(opened).toEqual(false);
@@ -28,7 +28,7 @@ describe('@Listen', () => {
       elm.dispatchEvent(ev);
     })
 
-    await page.waitForQueue();
+    await page.waitForChanges();
 
     // let's get the value of "opened" again
     opened = await page.find('listen-cmp').getProperty<boolean>('opened');
@@ -45,7 +45,7 @@ describe('@Listen', () => {
       elm.dispatchEvent(ev);
     })
 
-    await page.waitForQueue();
+    await page.waitForChanges();
 
     // let's get the value of "opened" again
     opened = await page.$eval('listen-cmp', (elm: any) => elm.opened);

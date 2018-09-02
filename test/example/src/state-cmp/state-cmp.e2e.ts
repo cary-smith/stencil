@@ -1,11 +1,11 @@
-import { newTestPage } from '../../../../dist/testing';
+import { newE2EPage } from '../../../../dist/testing';
 
 
 describe('@State', () => {
 
   it('should render all weekdays', async () => {
     // create a new puppeteer page
-    const page = await newTestPage({ html: `
+    const page = await newE2EPage({ html: `
       <state-cmp></state-cmp>
     `});
 

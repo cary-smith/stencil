@@ -1,4 +1,4 @@
-import { newTestPage } from '../../../../dist/testing';
+import { newE2EPage } from '../../../../dist/testing';
 
 
 describe('goto root url', () => {
@@ -6,7 +6,7 @@ describe('goto root url', () => {
   it('should navigate to the index.html page w/out url searchParams', async () => {
     // create a new puppeteer page
     // and go to the root webpage
-    const page = await newTestPage({ url: '/'});
+    const page = await newE2EPage({ url: '/'});
 
     // select the "prop-cmp" element within the page (same as querySelector)
     // and once it's received, then return the element's "textContent" property
@@ -18,7 +18,7 @@ describe('goto root url', () => {
 
   it('should navigate to the index.html page with custom url searchParams', async () => {
     // create a new puppeteer page
-    const page = await newTestPage({
+    const page = await newE2EPage({
       url: '/?first=Doc&last=Brown'
     });
 
