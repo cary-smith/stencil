@@ -16,6 +16,20 @@ export async function initE2EPageEvents(page: pd.E2EPageInternal) {
   };
 
   await page.evaluateOnNewDocument(browserContextEvents);
+
+  page.spyOnEvent = spyOnEvent.bind(page, page);
+
+}
+
+
+async function spyOnEvent(page: pd.E2EPageInternal, selector: string, eventName: string) {
+  const mockFn = jest.fn();
+
+  await addE2EListener(page, selector, eventName, (ev: CustomEvent) => {
+    mockFn(ev.detail);
+  });
+
+  return mockFn;
 }
 
 

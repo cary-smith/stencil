@@ -94,19 +94,34 @@ describe('@Event', () => {
     expect(myEventWithOptions.detail).toEqual({ mph: 88 });
   });
 
-  it('spyOnEvent', async () => {
+  it('element spyOnEvent', async () => {
     const page = await newE2EPage({ html: `
       <event-cmp></event-cmp>
     `});
 
     const elm = await page.find('event-cmp');
-    const eventSpy = await elm.spyOnEvent('my-event-with-options');
+    const elmEventSpy = await elm.spyOnEvent('my-event-with-options');
 
     await elm.callMethod('methodThatFiresEventWithOptions');
 
     await page.waitForChanges();
 
-    expect(eventSpy).toHaveBeenCalledWith({ mph: 88 })
+    expect(elmEventSpy).toHaveBeenCalledWith({ mph: 88 })
+  });
+
+  it('page spyOnEvent', async () => {
+    const page = await newE2EPage({ html: `
+      <event-cmp></event-cmp>
+    `});
+
+    const elm = await page.find('event-cmp');
+    const pageEventSpy = await page.spyOnEvent('event-cmp', 'my-event-with-options');
+
+    await elm.callMethod('methodThatFiresEventWithOptions');
+
+    await page.waitForChanges();
+
+    expect(pageEventSpy).toHaveBeenCalledWith({ mph: 88 })
   });
 
 });

@@ -28,6 +28,8 @@ export interface E2EPage extends PuppeteerPage {
 
   setContent(html: string): Promise<void>;
 
+  spyOnEvent(selector: string, eventName: string): Promise<jest.Mock>;
+
   waitForChanges(): Promise<void>;
 
   waitForEvent(selector: 'window' | 'document' | string, eventName: string, opts?: WaitForEventOptions): Promise<CustomEvent>;
@@ -51,8 +53,6 @@ export interface E2EElement {
 
   getProperty(propertyName: string): Promise<any>;
 
-  setProperty(propertyName: string, value: any): void;
-
   focus(): Promise<void>;
 
   hover(): Promise<void>;
@@ -61,7 +61,9 @@ export interface E2EElement {
 
   press(key: string, options?: { text?: string, delay?: number }): Promise<void>;
 
-  spyOnEvent(eventName: string): any;
+  setProperty(propertyName: string, value: any): void;
+
+  spyOnEvent(eventName: string): Promise<jest.Mock>;
 
   tap(): Promise<void>;
 
