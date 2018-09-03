@@ -35,6 +35,15 @@ export namespace Components {
     'opened'?: boolean;
   }
 
+  interface MethodCmp {
+    'someMethod': () => number;
+    'someMethodWithArgs': (unit: string, value: number) => string;
+    'someProp': number;
+  }
+  interface MethodCmpAttributes extends StencilHTMLAttributes {
+    'someProp'?: number;
+  }
+
   interface PropCmp {
     'first': string;
     'lastName': string;
@@ -54,6 +63,7 @@ declare global {
     'ElementCmp': Components.ElementCmp;
     'EventCmp': Components.EventCmp;
     'ListenCmp': Components.ListenCmp;
+    'MethodCmp': Components.MethodCmp;
     'PropCmp': Components.PropCmp;
     'StateCmp': Components.StateCmp;
   }
@@ -63,6 +73,7 @@ declare global {
     'element-cmp': Components.ElementCmpAttributes;
     'event-cmp': Components.EventCmpAttributes;
     'listen-cmp': Components.ListenCmpAttributes;
+    'method-cmp': Components.MethodCmpAttributes;
     'prop-cmp': Components.PropCmpAttributes;
     'state-cmp': Components.StateCmpAttributes;
   }
@@ -92,6 +103,12 @@ declare global {
     new (): HTMLListenCmpElement;
   };
 
+  interface HTMLMethodCmpElement extends Components.MethodCmp, HTMLStencilElement {}
+  var HTMLMethodCmpElement: {
+    prototype: HTMLMethodCmpElement;
+    new (): HTMLMethodCmpElement;
+  };
+
   interface HTMLPropCmpElement extends Components.PropCmp, HTMLStencilElement {}
   var HTMLPropCmpElement: {
     prototype: HTMLPropCmpElement;
@@ -109,6 +126,7 @@ declare global {
     'element-cmp': HTMLElementCmpElement
     'event-cmp': HTMLEventCmpElement
     'listen-cmp': HTMLListenCmpElement
+    'method-cmp': HTMLMethodCmpElement
     'prop-cmp': HTMLPropCmpElement
     'state-cmp': HTMLStateCmpElement
   }
@@ -118,6 +136,7 @@ declare global {
     'element-cmp': HTMLElementCmpElement;
     'event-cmp': HTMLEventCmpElement;
     'listen-cmp': HTMLListenCmpElement;
+    'method-cmp': HTMLMethodCmpElement;
     'prop-cmp': HTMLPropCmpElement;
     'state-cmp': HTMLStateCmpElement;
   }
