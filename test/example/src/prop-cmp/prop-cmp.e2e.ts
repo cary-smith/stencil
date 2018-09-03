@@ -14,7 +14,7 @@ describe('@Prop', () => {
   it('should set props from property', async () => {
     // create a new puppeteer page
     // load the page with html content
-    await page.e2eSetContent(`
+    await page.setContent(`
       <prop-cmp></prop-cmp>
     `);
 
@@ -37,7 +37,7 @@ describe('@Prop', () => {
   });
 
   it('should set props from attributes', async () => {
-    await page.e2eSetContent(`
+    await page.setContent(`
       <prop-cmp first="Marty" last-name="McFly"></prop-cmp>
     `);
 

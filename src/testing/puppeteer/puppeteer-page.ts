@@ -2,7 +2,7 @@ import * as d from '../../declarations';
 import * as pd from './puppeteer-declarations';
 import { getE2EElement } from './puppeteer-element';
 import { initPageEvents } from './puppeteer-events';
-import { initTestPageScreenshot } from './puppeteer-screenshot';
+import { initE2EPageScreenshot } from './puppeteer-screenshot';
 import * as puppeteer from 'puppeteer';
 import { closePage } from './puppeteer-browser';
 
@@ -10,22 +10,22 @@ import { closePage } from './puppeteer-browser';
 declare const global: d.JestEnvironmentGlobal;
 
 
-export async function newE2EPage(opts: pd.NewE2EPageOptions = {}) {
+export async function newE2EPage(opts: pd.NewE2EPageOptions = {}): Promise<pd.E2EPage> {
   if (!global.__NEW_TEST_PAGE__) {
     throw new Error(`newE2EPage() is only available from E2E tests, and ran with the --e2e cmd line flag.`);
   }
 
   const page: pd.E2EPageInternal = await global.__NEW_TEST_PAGE__();
 
-  page.e2eElements = [];
+  page._elements = [];
 
-  await setPageEmulate(page);
+  await setPageEmulate(page as any);
 
   await page.setCacheEnabled(false);
 
   await initPageEvents(page);
 
-  initTestPageScreenshot(page);
+  initE2EPageScreenshot(page);
 
   page.find = async (lightDomSelector) => {
     return await getE2EElement(page, lightDomSelector);
@@ -37,6 +37,8 @@ export async function newE2EPage(opts: pd.NewE2EPageOptions = {}) {
   page.on('pageerror', pageError);
   page.on('requestfailed', requestFailed);
 
+  page._goto = page.goto;
+
   if (typeof opts.html === 'string') {
     await e2eSetContent(page, opts.html);
 
@@ -44,15 +46,15 @@ export async function newE2EPage(opts: pd.NewE2EPageOptions = {}) {
     await e2eGoTo(page, opts.url);
 
   } else {
-    page.e2eGoTo = e2eGoTo.bind(null, page);
-    page.e2eSetContent = e2eSetContent.bind(null, page);
+    page.goto = e2eGoTo.bind(null, page);
+    page.setContent = e2eSetContent.bind(null, page);
   }
 
   return page;
 }
 
 
-async function e2eGoTo(page: pd.E2EPage, url: string) {
+async function e2eGoTo(page: pd.E2EPageInternal, url: string) {
   try {
     if (page.isClosed()) {
       console.error('e2eGoTo unavailable: page already closed');
@@ -88,7 +90,7 @@ async function e2eGoTo(page: pd.E2EPage, url: string) {
 
   let timedOut = false;
   try {
-    await page.goto(fullUrl, {
+    await page._goto(fullUrl, {
       waitUntil: 'load'
     });
 
@@ -111,7 +113,7 @@ async function e2eGoTo(page: pd.E2EPage, url: string) {
 }
 
 
-async function e2eSetContent(page: pd.E2EPage, html: string) {
+async function e2eSetContent(page: pd.E2EPageInternal, html: string) {
   try {
     if (page.isClosed()) {
       console.error('e2eSetContent unavailable: page already closed');
@@ -144,7 +146,7 @@ async function e2eSetContent(page: pd.E2EPage, html: string) {
     // resolves once the stencil app has finished loading
     const appLoaded = page.waitForFunction('window.stencilAppLoaded');
 
-    await page.goto(url.join(''), {
+    await page._goto(url.join(''), {
       waitUntil: 'load'
     });
 
@@ -157,7 +159,7 @@ async function e2eSetContent(page: pd.E2EPage, html: string) {
 }
 
 
-async function setPageEmulate(page: pd.E2EPage) {
+async function setPageEmulate(page: puppeteer.Page) {
   try {
     if (page.isClosed()) {
       return;
@@ -188,7 +190,7 @@ async function setPageEmulate(page: pd.E2EPage) {
       userAgent: screenshotEmulate.userAgent
     };
 
-    await page.emulate(emulateOptions);
+    await (page as puppeteer.Page).emulate(emulateOptions);
 
     if (screenshotEmulate.mediaType) {
       await page.emulateMedia(screenshotEmulate.mediaType);
@@ -210,7 +212,7 @@ async function waitForChanges(page: pd.E2EPageInternal) {
     return;
   }
 
-  await Promise.all(page.e2eElements.map(async elm => {
+  await Promise.all(page._elements.map(async elm => {
     await elm.e2eRunActions();
   }));
 
@@ -218,7 +220,7 @@ async function waitForChanges(page: pd.E2EPageInternal) {
     return new Promise(resolve => window.requestAnimationFrame(resolve));
   });
 
-  await Promise.all(page.e2eElements.map(async elm => {
+  await Promise.all(page._elements.map(async elm => {
     await elm.e2eSync();
   }));
 }

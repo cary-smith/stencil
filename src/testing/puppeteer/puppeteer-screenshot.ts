@@ -4,25 +4,27 @@ import * as pd from './puppeteer-declarations';
 import * as puppeteer from 'puppeteer';
 
 
-export function initTestPageScreenshot(page: pd.E2EPage) {
+export function initE2EPageScreenshot(page: pd.E2EPageInternal) {
+  page._screenshot = (page as any).screenshot;
+
   if ((process.env as d.E2EProcessEnv).__STENCIL_SCREENSHOTS__ === 'true') {
-    page.e2eScreenshot = screenshot.bind(page, page);
+    page.screenshot = screenshot.bind(page, page);
 
   } else {
     // screen shot not enabled, so don't bother creating all this
-    page.e2eScreenshot = () => Promise.resolve();
+    (page as any).screenshot = () => Promise.resolve();
   }
 }
 
 
-export async function screenshot(page: pd.E2EPage, uniqueDescription: string, opts: d.TestScreenshotOptions = {}) {
-  const screenshot = await page.screenshot(createPuppeteerScreenshopOptions(opts));
+export async function screenshot(page: pd.E2EPageInternal, uniqueDescription: string, opts: d.E2EScreenshotOptions = {}) {
+  const screenshot = await page._screenshot(createPuppeteerScreenshopOptions(opts));
 
   await writeE2EScreenshot(screenshot, uniqueDescription);
 }
 
 
-function createPuppeteerScreenshopOptions(opts: d.TestScreenshotOptions) {
+function createPuppeteerScreenshopOptions(opts: d.E2EScreenshotOptions) {
   const puppeteerOpts: puppeteer.ScreenshotOptions = {
     type: 'png',
     fullPage: opts.fullPage,

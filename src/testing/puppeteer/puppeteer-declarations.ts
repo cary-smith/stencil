@@ -8,7 +8,12 @@ export interface NewE2EPageOptions {
 }
 
 
-export interface E2EPage extends puppeteer.Page {
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+type PuppeteerPage = Omit<puppeteer.Page,
+'bringToFront' | 'browser' | 'screenshot' | 'close' | 'emulate' | 'emulateMedia' | 'frames' | 'goBack' | 'goForward' | 'isClosed' | 'mainFrame' | 'pdf' | 'reload' | 'target' | 'title' | 'url' | 'viewport' | 'waitForNavigation' | 'screenshot' | 'workers'
+>;
+
+export interface E2EPage extends PuppeteerPage {
   /**
    * Testing query for one element. Uses queryselector() to
    * find the first element that matches the selector
@@ -17,20 +22,23 @@ export interface E2EPage extends puppeteer.Page {
    */
   find(lightDomSelector: string): Promise<E2EElement>;
 
-  e2eGoTo(url: string, options?: Partial<puppeteer.NavigationOptions>): Promise<puppeteer.Response | null>;
+  goTo(url: string, options?: Partial<puppeteer.NavigationOptions>): Promise<puppeteer.Response | null>;
 
-  e2eScreenshot(uniqueDescription: string, opts?: d.TestScreenshotOptions): Promise<void>;
+  screenshot(uniqueDescription: string, opts?: d.E2EScreenshotOptions): Promise<void>;
 
-  e2eSetContent(html: string): Promise<void>;
-
-  waitForEvent(selector: 'window' | 'document' | string, eventName: string, opts?: WaitForEventOptions): Promise<CustomEvent>;
+  setContent(html: string): Promise<void>;
 
   waitForChanges(): Promise<void>;
+
+  waitForEvent(selector: 'window' | 'document' | string, eventName: string, opts?: WaitForEventOptions): Promise<CustomEvent>;
 }
 
 
 export interface E2EPageInternal extends E2EPage {
-  e2eElements: E2EElementInternal[];
+  isClosed(): boolean;
+  _elements: E2EElementInternal[];
+  _goto(url: string, options?: Partial<puppeteer.NavigationOptions>): Promise<puppeteer.Response | null>;
+  _screenshot(options?: puppeteer.ScreenshotOptions): Promise<Buffer>;
 }
 
 

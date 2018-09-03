@@ -69,10 +69,10 @@ export function newBrowserPage(browser: puppeteer.Browser) {
 }
 
 
-export async function closePage(page: puppeteer.Page) {
+export async function closePage(page: any) {
   try {
-    if (!page.isClosed()) {
-      await page.close();
+    if (!(page as puppeteer.Page).isClosed()) {
+      await (page as puppeteer.Page).close();
     }
   } catch (e) {}
 }

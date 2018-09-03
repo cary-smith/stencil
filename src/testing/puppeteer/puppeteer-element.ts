@@ -11,7 +11,7 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
 
   constructor(private page: pd.E2EPageInternal, selector: string) {
     super(null, null);
-    page.e2eElements.push(this);
+    page._elements.push(this);
 
     const splt = selector.split('>>>');
 
@@ -172,9 +172,9 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
       this._e2eHandle = null;
     }
 
-    const index = this.page.e2eElements.indexOf(this);
+    const index = this.page._elements.indexOf(this);
     if (index > -1) {
-      this.page.e2eElements.splice(index, 1);
+      this.page._elements.splice(index, 1);
     }
 
     this.page = null;

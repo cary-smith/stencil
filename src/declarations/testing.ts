@@ -119,7 +119,7 @@ export interface ScreenshotEmulate {
 }
 
 
-export interface TestScreenshotOptions {
+export interface E2EScreenshotOptions {
   /**
    * When true, takes a screenshot of the full scrollable page.
    * @default false
