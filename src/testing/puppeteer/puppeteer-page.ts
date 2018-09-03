@@ -1,10 +1,10 @@
 import * as d from '../../declarations';
 import * as pd from './puppeteer-declarations';
+import { closePage } from './puppeteer-browser';
 import { getE2EElement } from './puppeteer-element';
-import { initPageEvents } from './puppeteer-events';
+import { initE2EPageEvents } from './puppeteer-events';
 import { initE2EPageScreenshot } from './puppeteer-screenshot';
 import * as puppeteer from 'puppeteer';
-import { closePage } from './puppeteer-browser';
 
 
 declare const global: d.JestEnvironmentGlobal;
@@ -23,7 +23,7 @@ export async function newE2EPage(opts: pd.NewE2EPageOptions = {}): Promise<pd.E2
 
   await page.setCacheEnabled(false);
 
-  await initPageEvents(page);
+  await initE2EPageEvents(page);
 
   initE2EPageScreenshot(page);
 

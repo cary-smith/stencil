@@ -1,78 +1,85 @@
 import * as pd from './puppeteer-declarations';
 
 
-export async function initPageEvents(page: pd.E2EPage) {
-  const waitForEvents: pd.WaitForEvent[] = [];
+export async function initE2EPageEvents(page: pd.E2EPageInternal) {
+  page._events = [];
+  page._eventIds = 0;
 
   await page.exposeFunction('stencilOnEvent', (browserEvent: pd.BrowserContextEvent) => {
     // NODE CONTEXT
-    nodeContextEvents(waitForEvents, browserEvent);
+    nodeContextEvents(page._events, browserEvent);
   });
 
   page.waitForEvent = (selector, eventName, opts = {}) => {
     // NODE CONTEXT
-    return waitForEvent(page, waitForEvents, selector, eventName, opts);
+    return waitForEvent(page, selector, eventName, opts);
   };
 
   await page.evaluateOnNewDocument(browserContextEvents);
 }
 
 
-export function waitForEvent(page: pd.E2EPage, waitForEvents: pd.WaitForEvent[], selector: string, eventName: string, opts: pd.WaitForEventOptions) {
+export function waitForEvent(page: pd.E2EPageInternal, selector: string, eventName: string, opts: pd.WaitForEventOptions) {
   // NODE CONTEXT
   return new Promise<any>(async (resolve, reject) => {
     const timeout = (typeof opts.timeout === 'number' ? opts.timeout : 30000);
 
     const cancelRejectId = setTimeout(reject, timeout);
 
-    waitForEvents.push({
-      selector: selector,
-      eventName: eventName,
-      resolve: resolve,
-      cancelRejectId: cancelRejectId
-    });
-
-    if (selector === 'window' || selector === 'document') {
-      // add window or document event listener
-      await page.evaluate((selector, eventName) => {
-        // BROWSER CONTEXT
-        (selector === 'document' ? document : window).addEventListener(eventName, (ev: any) => {
-          (window as pd.BrowserWindow).stencilOnEvent({
-            selector: selector,
-            eventName: eventName,
-            event: (window as pd.BrowserWindow).stencilSerializeEvent(ev)
-          });
-        });
-      }, selector, eventName);
-
-    } else {
-      // add element event listener
-      await page.$eval(selector, (elm: any, selector: string, eventName: string) => {
-        // BROWSER CONTEXT
-        elm.addEventListener(eventName, (ev: any) => {
-          (window as pd.BrowserWindow).stencilOnEvent({
-            selector: selector,
-            eventName: eventName,
-            event: (window as pd.BrowserWindow).stencilSerializeEvent(ev)
-          });
-        });
-      }, selector, eventName);
-    }
+    addE2EListener(page, selector, eventName, resolve, cancelRejectId);
   });
+}
+
+
+export async function addE2EListener(page: pd.E2EPageInternal, selector: string, eventName: string, resolve: (ev: any) => void, cancelRejectId?: any) {
+  // NODE CONTEXT
+  const id = page._eventIds++;
+
+  page._events.push({
+    id: id,
+    eventName: eventName,
+    resolve: resolve,
+    cancelRejectId: cancelRejectId
+  });
+
+  if (selector === 'window' || selector === 'document') {
+    // add window or document event listener
+    await page.evaluate((id, selector, eventName) => {
+      // BROWSER CONTEXT
+      (selector === 'document' ? document : window).addEventListener(eventName, (ev: any) => {
+        (window as pd.BrowserWindow).stencilOnEvent({
+          id: id,
+          event: (window as pd.BrowserWindow).stencilSerializeEvent(ev)
+        });
+      });
+    }, id, selector, eventName);
+
+  } else {
+    // add element event listener
+    await page.$eval(selector, (elm: any, id, eventName) => {
+      // BROWSER CONTEXT
+      elm.addEventListener(eventName, (ev: any) => {
+        (window as pd.BrowserWindow).stencilOnEvent({
+          id: id,
+          event: (window as pd.BrowserWindow).stencilSerializeEvent(ev)
+        });
+      });
+    }, id, eventName);
+  }
 }
 
 
 function nodeContextEvents(waitForEvents: pd.WaitForEvent[], browserEvent: pd.BrowserContextEvent) {
   // NODE CONTEXT
   const waitForEventData = waitForEvents.find(waitData => {
-    return (
-      waitData.selector === browserEvent.selector &&
-      waitData.eventName === browserEvent.eventName
-    );
+    return waitData.id === browserEvent.id;
   });
 
   if (waitForEventData) {
-    clearTimeout(waitForEventData.cancelRejectId);
+    if (waitForEventData.cancelRejectId != null) {
+      clearTimeout(waitForEventData.cancelRejectId);
+    }
+
     waitForEventData.resolve(browserEvent.event);
   }
 }

@@ -38,22 +38,20 @@ export interface E2EPageInternal extends E2EPage {
   isClosed(): boolean;
   _elements: E2EElementInternal[];
   _goto(url: string, options?: Partial<puppeteer.NavigationOptions>): Promise<puppeteer.Response | null>;
+  _events: WaitForEvent[];
+  _eventIds: number;
   _screenshot(options?: puppeteer.ScreenshotOptions): Promise<Buffer>;
 }
 
 
-export interface E2EElementInternal extends E2EElement {
-  e2eRunActions(): Promise<void>;
-  e2eSync(): Promise<void>;
-}
-
-
 export interface E2EElement {
+  callMethod(methodName: string, ...methodArgs: any[]): Promise<any>;
+
+  click(options?: puppeteer.ClickOptions): void;
+
   getProperty(propertyName: string): Promise<any>;
 
   setProperty(propertyName: string, value: any): void;
-
-  click(options?: puppeteer.ClickOptions): void;
 
   focus(): Promise<void>;
 
@@ -63,11 +61,19 @@ export interface E2EElement {
 
   press(key: string, options?: { text?: string, delay?: number }): Promise<void>;
 
+  spyOnEvent(eventName: string): any;
+
   tap(): Promise<void>;
 
   triggerEvent(eventName: string, detail?: any): void;
 
   type(text: string, options?: { delay: number }): Promise<void>;
+}
+
+
+export interface E2EElementInternal extends E2EElement {
+  e2eRunActions(): Promise<void>;
+  e2eSync(): Promise<void>;
 }
 
 
@@ -77,7 +83,7 @@ export interface WaitForEventOptions {
 
 
 export interface WaitForEvent {
-  selector: string;
+  id: number;
   eventName: string;
   resolve: (ev: any) => void;
   cancelRejectId: any;
@@ -85,8 +91,7 @@ export interface WaitForEvent {
 
 
 export interface BrowserContextEvent {
-  selector: string;
-  eventName: string;
+  id: number;
   event: any;
 }
 

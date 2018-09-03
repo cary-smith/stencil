@@ -1,5 +1,6 @@
 import * as pd from './puppeteer-declarations';
 import * as puppeteer from 'puppeteer';
+import { addE2EListener } from './puppeteer-events';
 import { MockElement } from '../mock-doc/node';
 import { parseFragment } from '../parse-html';
 
@@ -36,6 +37,25 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
       setPropertyName: propertyName,
       setPropertyValue: value
     });
+  }
+
+  callMethod(methodName: string, ...methodArgs: any[]) {
+    this.queuedActions.push({
+      methodName: methodName,
+      methodArgs: methodArgs
+    });
+
+    return this.e2eRunActions();
+  }
+
+  async spyOnEvent(eventName: string) {
+    const mockFn = jest.fn();
+
+    await addE2EListener(this.page, this.lightSelector, eventName, (ev: CustomEvent) => {
+      mockFn(ev.detail);
+    });
+
+    return mockFn;
   }
 
   triggerEvent(eventName: string, eventDetail?: any) {
@@ -93,7 +113,8 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
       return;
     }
 
-    await this.page.$eval(this.lightSelector, (elm: HTMLElement, shadowSelector, queuedActions) => {
+    const rtn = await this.page.$eval(this.lightSelector, (elm: HTMLElement, shadowSelector, queuedActions) => {
+      // BROWSER CONTEXT
       let foundElm: HTMLElement;
 
       if (shadowSelector) {
@@ -111,19 +132,38 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
         foundElm = elm;
       }
 
-      queuedActions.forEach(queuedAction => {
-        if (queuedAction.setPropertyName) {
-          (foundElm as any)[queuedAction.setPropertyName] = queuedAction.setPropertyValue;
+      // BROWSER CONTEXT
+      // cannot use async/await in here cuz typescript transpiles it in the node context
+      return (elm as any).componentOnReady().then(() => {
+        let rtn: any = null;
 
-        } else if (queuedAction.eventName) {
-          const ev = new CustomEvent(queuedAction.eventName, queuedAction.eventDetail);
-          foundElm.dispatchEvent(ev);
+        queuedActions.forEach(queuedAction => {
+          if (queuedAction.methodName) {
+            rtn = (elm as any)[queuedAction.methodName].apply(elm, queuedAction.methodArgs);
+
+          } else if (queuedAction.setPropertyName) {
+            (foundElm as any)[queuedAction.setPropertyName] = queuedAction.setPropertyValue;
+
+          } else if (queuedAction.eventName) {
+            const ev = new CustomEvent(queuedAction.eventName, queuedAction.eventDetail);
+            foundElm.dispatchEvent(ev);
+          }
+        });
+
+        if (rtn && typeof rtn.then === 'function') {
+          return rtn.then((value: any) => {
+            return value;
+          });
         }
+
+        return rtn;
       });
 
     }, this.shadowSelector, this.queuedActions);
 
     this.queuedActions.length = 0;
+
+    return rtn;
   }
 
   async e2eSync() {
@@ -193,6 +233,8 @@ export async function getE2EElement(page: pd.E2EPageInternal, lightDomSelector: 
 
 
 interface ElementActions {
+  methodName?: string;
+  methodArgs?: any[];
   eventName?: string;
   eventDetail?: any;
   setPropertyName?: string;

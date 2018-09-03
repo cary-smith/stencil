@@ -21,7 +21,8 @@ describe('@Event', () => {
     // and once it's received, then call the component's "methodThatFiresMyWindowEvent()" method
     // when calling the method it is executing it within the browser's context
     // we're using the @Method here to manually trigger an event from the component for testing
-    await page.$eval('event-cmp', (elm: any) => elm.methodThatFiresMyWindowEvent(88));
+    const elm = await page.find('event-cmp');
+    await elm.callMethod('methodThatFiresMyWindowEvent', 88);
 
     // now that the method has been fired, the component's event fired too
     // let's now "await" on receiving the event that was just triggered
@@ -54,7 +55,8 @@ describe('@Event', () => {
 
     const myDocumentEventPromise = page.waitForEvent('document', 'myDocumentEvent');
 
-    await page.$eval('event-cmp', (elm: any) => elm.methodThatFiresMyDocumentEvent());
+    const elm = await page.find('event-cmp');
+    await elm.callMethod('methodThatFiresMyDocumentEvent');
 
     const myDocumentEvent = await myDocumentEventPromise;
 
@@ -81,7 +83,8 @@ describe('@Event', () => {
 
     const myEventWithOptionsPromise = page.waitForEvent('event-cmp', 'my-event-with-options');
 
-    await page.$eval('event-cmp', (elm: any) => elm.methodThatFiresEventWithOptions());
+    const elm = await page.find('event-cmp');
+    await elm.callMethod('methodThatFiresEventWithOptions');
 
     const myEventWithOptions = await myEventWithOptionsPromise;
 
@@ -89,6 +92,21 @@ describe('@Event', () => {
     expect(myEventWithOptions.bubbles).toBe(false);
     expect(myEventWithOptions.cancelable).toBe(false);
     expect(myEventWithOptions.detail).toEqual({ mph: 88 });
+  });
+
+  it('spyOnEvent', async () => {
+    const page = await newE2EPage({ html: `
+      <event-cmp></event-cmp>
+    `});
+
+    const elm = await page.find('event-cmp');
+    const eventSpy = await elm.spyOnEvent('my-event-with-options');
+
+    await elm.callMethod('methodThatFiresEventWithOptions');
+
+    await page.waitForChanges();
+
+    expect(eventSpy).toHaveBeenCalledWith({ mph: 88 })
   });
 
 });
