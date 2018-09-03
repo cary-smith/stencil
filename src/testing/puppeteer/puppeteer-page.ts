@@ -210,17 +210,16 @@ async function waitForChanges(page: pd.E2EPageInternal) {
     return;
   }
 
-  await updateE2EElements(page);
+  await Promise.all(page.e2eElements.map(async elm => {
+    await elm.e2eRunActions();
+  }));
 
   await page.evaluate(() => {
     return new Promise(resolve => window.requestAnimationFrame(resolve));
   });
-}
 
-
-async function updateE2EElements(page: pd.E2EPageInternal) {
   await Promise.all(page.e2eElements.map(async elm => {
-    await elm.e2eUpdate();
+    await elm.e2eSync();
   }));
 }
 

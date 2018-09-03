@@ -5,6 +5,7 @@ declare global {
     interface Matchers<R> {
       toBeChecked(): void;
       toEqualHtml(html: string): void;
+      toEqualText(textContent: string): void;
 
       toHaveAttribute(attributeName: string): void;
       toHaveAttributes(attributes: { [attr: string]: string }): void;

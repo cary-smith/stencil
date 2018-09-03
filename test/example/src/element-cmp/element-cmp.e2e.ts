@@ -10,13 +10,8 @@ describe('@Element', () => {
     `});
 
     // with page.find() select the "element-cmp" element (uses querySelector)
-    // then get the selected element's textContent, which is all async
-    const textContent = await page.find('element-cmp').getText();
-    expect(textContent).toBe('Hello, my name is Marty McFly');
-
-    await page.find('element-cmp').setText('Hello, my name is Doc Brown');
-
-    expect(await page.find('element-cmp').getText()).toBe('Hello, my name is Doc Brown');
+    const elm = await page.find('element-cmp');
+    expect(elm).toEqualText('Hello, my name is Marty McFly');
   });
 
 });

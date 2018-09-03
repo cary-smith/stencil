@@ -178,6 +178,14 @@ function getOutputTarget(config: d.Config) {
 
 function getLoaderScriptUrl(config: d.Config, outputTarget: d.OutputTargetWww, browserUrl: string) {
   const appLoaderFilePath = getLoaderPath(config, outputTarget);
-  const appLoadUrlPath = config.sys.path.relative(config.rootDir, appLoaderFilePath);
+
+  let appLoadUrlPath: string;
+
+  if (outputTarget.type === 'www') {
+    appLoadUrlPath = config.sys.path.relative(outputTarget.dir, appLoaderFilePath);
+  } else {
+    appLoadUrlPath = config.sys.path.relative(config.rootDir, appLoaderFilePath);
+  }
+
   return browserUrl + appLoadUrlPath;
 }

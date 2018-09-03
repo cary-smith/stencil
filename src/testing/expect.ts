@@ -16,13 +16,28 @@ export function toBeChecked(elm: HTMLElement) {
   };
 }
 
-export function toEqualHtml(a: string, b: string) {
-  const parseA = parseFragment(a);
-  const parseB = parseFragment(b);
+export function toEqualHtml(input: string | HTMLElement, shouldEqual: string) {
+  if (input == null) {
+    return {
+      message: () => `expected to equal html "${shouldEqual}", but is null`,
+      pass: false,
+    };
+  }
 
-  const serializeA = serialize(parseA, {
-    format: 'html'
-  });
+  let serializeA: string;
+
+  if ((input as HTMLElement).nodeName) {
+    serializeA = (input as HTMLElement).innerHTML;
+
+  } else {
+    const parseA = parseFragment(input as string);
+
+    serializeA = serialize(parseA, {
+      format: 'html'
+    });
+  }
+
+  const parseB = parseFragment(shouldEqual);
 
   const serializeB = serialize(parseB, {
     format: 'html'
@@ -38,6 +53,30 @@ export function toEqualHtml(a: string, b: string) {
 
   return {
     message: () => 'expect HTML to match',
+    pass: true,
+  };
+}
+
+export function toEqualText(elm: HTMLElement, shouldEqualTextContent: string) {
+  if (!elm) {
+    return {
+      message: () => `expected to equal textContent "${shouldEqualTextContent}", but element is null`,
+      pass: false,
+    };
+  }
+
+  const elmTextContent = (elm.textContent || '').trim();
+  shouldEqualTextContent = (shouldEqualTextContent || '').trim();
+
+  if (elmTextContent !== shouldEqualTextContent) {
+    return {
+      message: () => `expected to equal textContent "${shouldEqualTextContent}", but element textContent is "${elmTextContent}"`,
+      pass: false,
+    };
+  }
+
+  return {
+    message: () => `expected to equal textContent`,
     pass: true,
   };
 }

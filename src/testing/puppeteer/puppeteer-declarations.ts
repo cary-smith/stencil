@@ -35,28 +35,17 @@ export interface E2EPageInternal extends E2EPage {
 
 
 export interface E2EElementInternal extends E2EElement {
-  e2eUpdate(): Promise<void>;
-  e2eDispose(): Promise<void>;
-}
-
-
-export interface E2EHostElement extends E2EElement {
-  /**
-   * Selects an element within the host element's shadow root. Uses
-   * "hostElm.shadowRoot.querySelector()" if the "shadowDomSelector"
-   * argument is supplied. Otherwise it'll use the shadowRoot element itself.
-   * @param shadowDomSelector Shadow Dom querySelector
-   */
-  findInShadow(shadowDomSelector?: string): E2EElement;
+  e2eRunActions(): Promise<void>;
+  e2eSync(): Promise<void>;
 }
 
 
 export interface E2EElement {
   getProperty(propertyName: string): Promise<any>;
 
-  setProperty(propertyName: string, value: any): Promise<void>;
+  setProperty(propertyName: string, value: any): void;
 
-  click(options?: puppeteer.ClickOptions): Promise<void>;
+  click(options?: puppeteer.ClickOptions): void;
 
   focus(): Promise<void>;
 
@@ -67,6 +56,8 @@ export interface E2EElement {
   press(key: string, options?: { text?: string, delay?: number }): Promise<void>;
 
   tap(): Promise<void>;
+
+  triggerEvent(eventName: string, detail?: any): void;
 
   type(text: string, options?: { delay: number }): Promise<void>;
 }

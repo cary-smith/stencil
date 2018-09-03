@@ -10,8 +10,8 @@ describe('goto root url', () => {
 
     // select the "prop-cmp" element within the page (same as querySelector)
     // and once it's received, then return the element's "textContent" property
-    const textContent = await page.find('prop-cmp').findInShadow('div').getText();
-    expect(textContent).toEqual('Hello, my name is Stencil JS');
+    const elm = await page.find('prop-cmp >>> div');
+    expect(elm).toEqualText('Hello, my name is Stencil JS');
 
     await page.e2eScreenshot('navigate to homepage');
   });
@@ -22,8 +22,8 @@ describe('goto root url', () => {
       url: '/?first=Doc&last=Brown'
     });
 
-    const textContent = await page.find('prop-cmp').findInShadow('div').getText();
-    expect(textContent).toEqual('Hello, my name is Doc Brown');
+    const elm = await page.find('prop-cmp >>> div');
+    expect(elm).toEqualText('Hello, my name is Doc Brown');
 
     await page.e2eScreenshot('navigate to homepage with querystrings');
   });

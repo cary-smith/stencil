@@ -14,7 +14,7 @@ describe('@Prop', () => {
   it('should set props from property', async () => {
     // create a new puppeteer page
     // load the page with html content
-    await page.setTestContent(`
+    await page.e2eSetContent(`
       <prop-cmp></prop-cmp>
     `);
 
@@ -32,16 +32,17 @@ describe('@Prop', () => {
     await page.waitForChanges();
 
     // select the "prop-cmp" element within the page (same as querySelector)
-    const shadowRootText = await page.find('prop-cmp').findInShadow('div').getText();
-    expect(shadowRootText).toEqual('Hello, my name is Marty McFly');
+    const elm = await page.find('prop-cmp >>> div');
+    expect(elm).toEqualText('Hello, my name is Marty McFly');
   });
 
   it('should set props from attributes', async () => {
-    await page.setTestContent(`
+    await page.e2eSetContent(`
       <prop-cmp first="Marty" last-name="McFly"></prop-cmp>
     `);
 
-    expect(await page.find('prop-cmp').findInShadow('div').getText()).toEqual('Hello, my name is Marty McFly');
+    const elm = await page.find('prop-cmp >>> div');
+    expect(elm).toEqualText('Hello, my name is Marty McFly');
   });
 
 });
