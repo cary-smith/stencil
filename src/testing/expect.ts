@@ -47,6 +47,10 @@ export function toEqualText(elm: HTMLElement, expectTextContent: string) {
     throw new Error(`expect toEqualText value is null`);
   }
 
+  if (typeof (elm as any).then === 'function') {
+    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
+  }
+
   if (elm.nodeType !== 1) {
     throw new Error(`expect toEqualText value is not an element`);
   }
@@ -67,6 +71,10 @@ export function toHaveAttribute(elm: HTMLElement, expectAttrName: string) {
     throw new Error(`expect toHaveAttribute value is null`);
   }
 
+  if (typeof (elm as any).then === 'function') {
+    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
+  }
+
   if (elm.nodeType !== 1) {
     throw new Error(`expect toHaveAttribute value is not an element`);
   }
@@ -82,6 +90,10 @@ export function toHaveAttribute(elm: HTMLElement, expectAttrName: string) {
 export function toEqualAttribute(elm: HTMLElement, expectAttrName: string, expectAttrValue: string) {
   if (!elm) {
     throw new Error(`expect toMatchAttribute value is null`);
+  }
+
+  if (typeof (elm as any).then === 'function') {
+    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
   }
 
   if (elm.nodeType !== 1) {
@@ -103,6 +115,10 @@ export function toHaveReceivedEvent(eventSpy: d.EventSpy) {
     throw new Error(`toHaveReceivedEvent event spy is null`);
   }
 
+  if (typeof (eventSpy as any).then === 'function') {
+    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
+  }
+
   if (!eventSpy.eventName) {
     throw new Error(`toHaveReceivedEvent did not receive an event spy`);
   }
@@ -120,6 +136,10 @@ export function toHaveReceivedEventTimes(eventSpy: d.EventSpy, count: number) {
     throw new Error(`toHaveReceivedEventTimes event spy is null`);
   }
 
+  if (typeof (eventSpy as any).then === 'function') {
+    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
+  }
+
   if (!eventSpy.eventName) {
     throw new Error(`toHaveReceivedEventTimes did not receive an event spy`);
   }
@@ -135,6 +155,10 @@ export function toHaveReceivedEventTimes(eventSpy: d.EventSpy, count: number) {
 export function toHaveReceivedEventDetail(eventSpy: d.EventSpy, eventDetail: any) {
   if (!eventSpy) {
     throw new Error(`toHaveReceivedEventDetail event spy is null`);
+  }
+
+  if (typeof (eventSpy as any).then === 'function') {
+    throw new Error(`event spy must be a resolved value, not a promise, before it can be tested`);
   }
 
   if (!eventSpy.eventName) {
@@ -158,6 +182,10 @@ export function toHaveReceivedEventDetail(eventSpy: d.EventSpy, eventDetail: any
 export function toHaveClass(elm: HTMLElement, expectClassName: string) {
   if (!elm) {
     throw new Error(`expect toHaveClass value is null`);
+  }
+
+  if (typeof (elm as any).then === 'function') {
+    throw new Error(`element must be a resolved value, not a promise, before it can be tested`);
   }
 
   if (elm.nodeType !== 1) {

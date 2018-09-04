@@ -49,6 +49,13 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
     return this.e2eRunActions();
   }
 
+  triggerEvent(eventName: string, eventInitDict?: d.EventInitDict) {
+    this.queuedActions.push({
+      eventName: eventName,
+      eventInitDict: eventInitDict
+    });
+  }
+
   async spyOnEvent(eventName: string) {
     const eventSpy = new EventSpy(eventName);
 
@@ -57,13 +64,6 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
     });
 
     return eventSpy;
-  }
-
-  triggerEvent(eventName: string, eventInitDict?: d.EventInitDict) {
-    this.queuedActions.push({
-      eventName: eventName,
-      eventInitDict: eventInitDict
-    });
   }
 
   async click(options?: puppeteer.ClickOptions) {
@@ -238,8 +238,8 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
 }
 
 
-export async function findE2EElement(page: pd.E2EPageInternal, lightDomSelector: string) {
-  const elm = new E2EElement(page, lightDomSelector);
+export async function findE2EElement(page: pd.E2EPageInternal, selector: string) {
+  const elm = new E2EElement(page, selector);
 
   await elm.e2eSync();
 

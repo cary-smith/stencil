@@ -18,9 +18,9 @@ export interface E2EPage extends PuppeteerPage {
    * Testing query for one element. Uses queryselector() to
    * find the first element that matches the selector
    * within the e2e page's light dom.
-   * @param lightDomSelector Light Dom querySelector
+   * @param selector Light Dom querySelector
    */
-  find(lightDomSelector: string): Promise<E2EElement>;
+  find(selector: string): Promise<E2EElement>;
 
   goTo(url: string, options?: Partial<puppeteer.NavigationOptions>): Promise<puppeteer.Response | null>;
 
@@ -47,6 +47,8 @@ export interface E2EPageInternal extends E2EPage {
 export interface E2EElement {
   callMethod(methodName: string, ...methodArgs: any[]): Promise<any>;
 
+  className: string;
+
   click(options?: puppeteer.ClickOptions): void;
 
   getProperty(propertyName: string): Promise<any>;
@@ -55,7 +57,11 @@ export interface E2EElement {
 
   hover(): Promise<void>;
 
+  innerHTML: string;
+
   isIntersectingViewport(): Promise<boolean>;
+
+  outerHTML: string;
 
   press(key: string, options?: { text?: string, delay?: number }): Promise<void>;
 

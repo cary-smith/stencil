@@ -69,7 +69,7 @@ describe('@Event', () => {
 
     await elm.callMethod('methodThatFiresEventWithOptions');
 
-    expect(elmEventSpy).toHaveLength(1);
+    expect(elmEventSpy).toHaveReceivedEventTimes(1);
 
     const receivedEvent = elmEventSpy.lastEvent;
 

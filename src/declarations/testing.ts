@@ -13,7 +13,7 @@ declare global {
 
       toHaveReceivedEvent(): void;
       toHaveReceivedEventTimes(count: number): void;
-      toHaveReceivedEventDetail(eventInitDict: EventInitDict): void;
+      toHaveReceivedEventDetail(eventDetail: any): void;
     }
   }
 }
