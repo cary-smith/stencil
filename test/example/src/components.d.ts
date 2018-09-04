@@ -36,8 +36,8 @@ export namespace Components {
   }
 
   interface MethodCmp {
-    'someMethod': () => number;
-    'someMethodWithArgs': (unit: string, value: number) => string;
+    'someMethod': () => Promise<number>;
+    'someMethodWithArgs': (unit: string, value: number) => Promise<string>;
     'someProp': number;
   }
   interface MethodCmpAttributes extends StencilHTMLAttributes {

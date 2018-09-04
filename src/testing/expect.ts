@@ -1,6 +1,7 @@
 import * as d from '../declarations';
 import { parseFragment } from './parse-html';
 import { serialize } from './mock-doc/serialize-node';
+import deepEqual from 'fast-deep-equal';
 
 
 export function toEqualHtml(input: string | HTMLElement, shouldEqual: string) {
@@ -97,13 +98,13 @@ export function toEqualAttribute(elm: HTMLElement, expectAttrName: string, expec
   };
 }
 
-export function toHaveCalledEvent(eventSpy: d.EventSpy) {
+export function toHaveReceivedEvent(eventSpy: d.EventSpy) {
   if (!eventSpy) {
-    throw new Error(`toHaveCalledEvent event spy is null`);
+    throw new Error(`toHaveReceivedEvent event spy is null`);
   }
 
-  if (!eventSpy.isEventSpy) {
-    throw new Error(`toHaveCalledEvent did not receive an event spy`);
+  if (!eventSpy.eventName) {
+    throw new Error(`toHaveReceivedEvent did not receive an event spy`);
   }
 
   const pass = (eventSpy.events.length > 0);
@@ -114,16 +115,16 @@ export function toHaveCalledEvent(eventSpy: d.EventSpy) {
   };
 }
 
-export function toHaveCalledEventTimes(eventSpy: d.EventSpy, count: number) {
+export function toHaveReceivedEventTimes(eventSpy: d.EventSpy, count: number) {
   if (!eventSpy) {
-    throw new Error(`toHaveCalledEventTimes event spy is null`);
+    throw new Error(`toHaveReceivedEventTimes event spy is null`);
   }
 
-  if (!eventSpy.isEventSpy) {
-    throw new Error(`toHaveCalledEventTimes did not receive an event spy`);
+  if (!eventSpy.eventName) {
+    throw new Error(`toHaveReceivedEventTimes did not receive an event spy`);
   }
 
-  const pass = (eventSpy.events.length === count);
+  const pass = (eventSpy.length === count);
 
   return {
     message: () => `expected event "${eventSpy.eventName}" to have been called ${count} times, but was called ${eventSpy.events.length} time${eventSpy.events.length > 1 ? 's' : ''}`,
@@ -131,22 +132,26 @@ export function toHaveCalledEventTimes(eventSpy: d.EventSpy, count: number) {
   };
 }
 
-export function toHaveCalledEventWith(eventSpy: d.EventSpy, expectEventInitDict: d.EventInitDict) {
+export function toHaveReceivedEventDetail(eventSpy: d.EventSpy, eventDetail: any) {
   if (!eventSpy) {
-    throw new Error(`toHaveCalledEventWith event spy is null`);
+    throw new Error(`toHaveReceivedEventDetail event spy is null`);
   }
 
-  if (!eventSpy.isEventSpy) {
-    throw new Error(`toHaveCalledEventWith did not receive an event spy`);
+  if (!eventSpy.eventName) {
+    throw new Error(`toHaveReceivedEventDetail did not receive an event spy`);
   }
 
-  const lastEvent = eventSpy.events[eventSpy.events.length - 1];
+  if (!eventSpy.lastEvent) {
+    throw new Error(`event "${eventSpy.eventName}" was not received`);
+  }
 
-  expect(lastEvent.detail).toEqual(expectEventInitDict.detail);
+  const pass = deepEqual(eventSpy.lastEvent.detail, eventDetail);
+
+  expect(eventSpy.lastEvent.detail).toEqual(eventDetail);
 
   return {
-    message: () => `expected toHaveCalledEventWith`,
-    pass: true,
+    message: () => `expected event "${eventSpy.eventName}" detail to ${pass ? 'not ' : ''}equal`,
+    pass: pass,
   };
 }
 

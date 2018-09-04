@@ -8,12 +8,12 @@ export class MethodCmp {
   @Prop() someProp = 0;
 
   @Method()
-  someMethod() {
+  async someMethod() {
     return this.someProp;
   }
 
   @Method()
-  someMethodWithArgs(unit: string, value: number) {
+  async someMethodWithArgs(unit: string, value: number) {
     return `${value} ${unit}`;
   }
 }

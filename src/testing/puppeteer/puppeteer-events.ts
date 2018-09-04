@@ -18,11 +18,7 @@ export async function initE2EPageEvents(page: pd.E2EPageInternal) {
 
 
 async function pageSpyOnEvent(page: pd.E2EPageInternal, eventName: string, selector: 'window' | 'document') {
-  const eventSpy: d.EventSpy = {
-    eventName: eventName,
-    events: [],
-    isEventSpy: true
-  };
+  const eventSpy = new EventSpy(eventName);
 
   if (selector !== 'document') {
     selector = 'window';
@@ -33,6 +29,25 @@ async function pageSpyOnEvent(page: pd.E2EPageInternal, eventName: string, selec
   });
 
   return eventSpy;
+}
+
+
+export class EventSpy implements d.EventSpy {
+  events: d.SerializedEvent[] = [];
+
+  constructor(public eventName: string) {}
+
+  get length() {
+    return this.events.length;
+  }
+
+  get firstEvent() {
+    return this.events[0] || null;
+  }
+
+  get lastEvent() {
+    return this.events[this.events.length - 1] || null;
+  }
 }
 
 
@@ -109,18 +124,24 @@ function browserContextEvents() {
     if (target === document) {
       return { serializedDocument: true };
     }
-    if (target.tagName) {
-      return {
+    if (target.nodeType != null) {
+      const serializedElement: any = {
+        serializedElement: true,
+        nodeName: target.nodeName,
+        nodeValue: target.nodeValue,
+        nodeType: target.nodeType,
         tagName: target.tagName,
-        serializedElement: true
+        className: target.className,
+        id: target.id,
       };
+      return serializedElement;
     }
     return null;
   };
 
   (window as pd.BrowserWindow).stencilSerializeEvent = (orgEv: any) => {
     // BROWSER CONTEXT
-    return {
+    const serializedEvent: d.SerializedEvent = {
       bubbles: orgEv.bubbles,
       cancelBubble: orgEv.cancelBubble,
       cancelable: orgEv.cancelable,
@@ -134,7 +155,9 @@ function browserContextEvents() {
       srcElement: (window as pd.BrowserWindow).stencilSerializeEventTarget(orgEv.srcElement),
       target: (window as pd.BrowserWindow).stencilSerializeEventTarget(orgEv.target),
       timeStamp: orgEv.timeStamp,
-      type: orgEv.type
+      type: orgEv.type,
+      isSerializedEvent: true
     };
+    return serializedEvent;
   };
 }

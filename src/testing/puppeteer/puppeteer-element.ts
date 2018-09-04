@@ -1,7 +1,7 @@
 import * as d from '../../declarations';
 import * as pd from './puppeteer-declarations';
 import * as puppeteer from 'puppeteer';
-import { addE2EListener } from './puppeteer-events';
+import { EventSpy, addE2EListener } from './puppeteer-events';
 import { MockElement } from '../mock-doc/node';
 import { parseFragment } from '../parse-html';
 
@@ -50,13 +50,9 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
   }
 
   async spyOnEvent(eventName: string) {
-    const eventSpy: d.EventSpy = {
-      eventName: eventName,
-      events: [],
-      isEventSpy: true
-    };
+    const eventSpy = new EventSpy(eventName);
 
-    await addE2EListener(this.page, this.lightSelector, eventName, (ev: CustomEvent) => {
+    await addE2EListener(this.page, this.lightSelector, eventName, (ev: d.SerializedEvent) => {
       eventSpy.events.push(ev);
     });
 

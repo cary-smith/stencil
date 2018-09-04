@@ -3,98 +3,82 @@ import { newE2EPage } from '../../../../dist/testing';
 
 describe('@Event', () => {
 
-  // it('should fire custom event on window', async () => {
-  //   // create a new puppeteer page
-  //   // and load the page with html content
-  //   const page = await newE2EPage({ html: `
-  //     <event-cmp></event-cmp>
-  //   `});
+  it('should fire custom event on window', async () => {
+    // create a new puppeteer page
+    // and load the page with html content
+    const page = await newE2EPage({ html: `
+      <event-cmp></event-cmp>
+    `});
 
-  //   // add an event listener on window BEFORE we fire off the event
-  //   // do not "await" on the event's response since it hasn't been fired yet
-  //   // only get the promise of waiting on the event which we'll "await" the data later
-  //   // the first argument of "page.waitForEvent()" can be either "window", "document"
-  //   // or an element selector (it uses querySelector)
-  //   const myWindowEventPromise = page.waitForEvent('window', 'myWindowEvent');
+    // select the "event-cmp" element within the page (same as querySelector)
+    const elm = await page.find('event-cmp');
 
-  //   // select the "event-cmp" element within the page (same as querySelector)
-  //   // and once it's received, then call the component's "methodThatFiresMyWindowEvent()" method
-  //   // when calling the method it is executing it within the browser's context
-  //   // we're using the @Method here to manually trigger an event from the component for testing
-  //   const elm = await page.find('event-cmp');
-  //   await elm.callMethod('methodThatFiresMyWindowEvent', 88);
+    // add an event listener on window BEFORE we fire off the event
+    const eventSpy = await elm.spyOnEvent('myWindowEvent');
 
-  //   // now that the method has been fired, the component's event fired too
-  //   // let's now "await" on receiving the event that was just triggered
-  //   const myWindowEvent = await myWindowEventPromise;
+    // call the component's "methodThatFiresMyWindowEvent()" method
+    // when calling the method it is executing it within the browser's context
+    // we're using the @Method here to manually trigger an event from the component for testing
+    await elm.callMethod('methodThatFiresMyWindowEvent', 88);
 
-  //   // the event has been received, test we have the correct values
-  //   expect(myWindowEvent.bubbles).toEqual(true);
-  //   expect(myWindowEvent.cancelBubble).toEqual(false);
-  //   expect(myWindowEvent.cancelable).toEqual(true);
-  //   expect(myWindowEvent.composed).toEqual(true);
-  //   expect(myWindowEvent.defaultPrevented).toEqual(false);
-  //   expect(myWindowEvent.detail).toEqual(88);
-  //   expect(myWindowEvent.eventPhase).toEqual(3);
-  //   expect(myWindowEvent.isTrusted).toEqual(false);
-  //   expect(myWindowEvent.returnValue).toEqual(true);
-  //   expect(myWindowEvent.timeStamp).toBeDefined();
-  //   expect(myWindowEvent.type).toEqual('myWindowEvent');
+    const receivedEvent = eventSpy.lastEvent;
 
-  //   // notice these are mocked objects, not the actual window, document or HTML Element objects
-  //   // since the event is serialized between node and the browser they need to be mocked
-  //   expect(myWindowEvent.currentTarget).toEqual({ serializedWindow: true });
-  //   expect(myWindowEvent.srcElement).toEqual({ serializedElement: true, tagName: 'EVENT-CMP' });
-  //   expect(myWindowEvent.target).toEqual({ serializedElement: true, tagName: 'EVENT-CMP' });
-  // });
+    // the event has been received, test we have the correct values
+    expect(receivedEvent.bubbles).toEqual(true);
+    expect(receivedEvent.cancelBubble).toEqual(false);
+    expect(receivedEvent.cancelable).toEqual(true);
+    expect(receivedEvent.composed).toEqual(true);
+    expect(receivedEvent.defaultPrevented).toEqual(false);
+    expect(receivedEvent.detail).toEqual(88);
+    expect(receivedEvent.isTrusted).toEqual(false);
+    expect(receivedEvent.returnValue).toEqual(true);
+    expect(receivedEvent.timeStamp).toBeDefined();
+    expect(receivedEvent.type).toEqual('myWindowEvent');
+  });
 
-  // it('should fire custom event on document', async () => {
-  //   const page = await newE2EPage({ html: `
-  //     <event-cmp></event-cmp>
-  //   `});
+  it('should fire custom event on document', async () => {
+    const page = await newE2EPage({ html: `
+      <event-cmp></event-cmp>
+    `});
 
-  //   const myDocumentEventPromise = page.waitForEvent('document', 'myDocumentEvent');
+    const elm = await page.find('event-cmp');
+    const elmEventSpy = await elm.spyOnEvent('myDocumentEvent');
 
-  //   const elm = await page.find('event-cmp');
-  //   await elm.callMethod('methodThatFiresMyDocumentEvent');
+    await elm.callMethod('methodThatFiresMyDocumentEvent');
 
-  //   const myDocumentEvent = await myDocumentEventPromise;
+    const receivedEvent = elmEventSpy.lastEvent;
 
-  //   expect(myDocumentEvent.bubbles).toEqual(true);
-  //   expect(myDocumentEvent.cancelBubble).toEqual(false);
-  //   expect(myDocumentEvent.cancelable).toEqual(true);
-  //   expect(myDocumentEvent.composed).toEqual(true);
-  //   expect(myDocumentEvent.currentTarget).toEqual({ serializedDocument: true });
-  //   expect(myDocumentEvent.defaultPrevented).toEqual(false);
-  //   expect(myDocumentEvent.detail).toEqual(null);
-  //   expect(myDocumentEvent.eventPhase).toEqual(3);
-  //   expect(myDocumentEvent.isTrusted).toEqual(false);
-  //   expect(myDocumentEvent.returnValue).toEqual(true);
-  //   expect(myDocumentEvent.srcElement).toEqual({ serializedElement: true, tagName: 'EVENT-CMP' });
-  //   expect(myDocumentEvent.target).toEqual({ serializedElement: true, tagName: 'EVENT-CMP' });
-  //   expect(myDocumentEvent.timeStamp).toBeDefined();
-  //   expect(myDocumentEvent.type).toEqual('myDocumentEvent');
-  // });
+    expect(receivedEvent.bubbles).toEqual(true);
+    expect(receivedEvent.cancelBubble).toEqual(false);
+    expect(receivedEvent.cancelable).toEqual(true);
+    expect(receivedEvent.composed).toEqual(true);
+    expect(receivedEvent.defaultPrevented).toEqual(false);
+    expect(receivedEvent.detail).toEqual(null);
+    expect(receivedEvent.isTrusted).toEqual(false);
+    expect(receivedEvent.returnValue).toEqual(true);
+    expect(receivedEvent.timeStamp).toBeDefined();
+  });
 
-  // it('should fire custom event w/ no options', async () => {
-  //   const page = await newE2EPage({ html: `
-  //     <event-cmp></event-cmp>
-  //   `});
+  it('should fire custom event w/ no options', async () => {
+    const page = await newE2EPage({ html: `
+      <event-cmp></event-cmp>
+    `});
 
-  //   const elm = await page.find('event-cmp');
-  //   const elmEventSpy = await elm.spyOnEvent('my-event-with-options');
+    const elm = await page.find('event-cmp');
+    const elmEventSpy = await elm.spyOnEvent('my-event-with-options');
 
-  //   await elm.callMethod('methodThatFiresEventWithOptions');
+    await elm.callMethod('methodThatFiresEventWithOptions');
 
-  //   const myEventWithOptions = await myEventWithOptionsPromise;
+    expect(elmEventSpy).toHaveLength(1);
 
-  //   expect(myEventWithOptions.type).toBe('my-event-with-options');
-  //   expect(myEventWithOptions.bubbles).toBe(false);
-  //   expect(myEventWithOptions.cancelable).toBe(false);
-  //   expect(myEventWithOptions.detail).toEqual({ mph: 88 });
-  // });
+    const receivedEvent = elmEventSpy.lastEvent;
 
-  it('spyOnEvent, toHaveCalledEventTimes', async () => {
+    expect(receivedEvent.bubbles).toBe(false);
+    expect(receivedEvent.cancelable).toBe(false);
+    expect(receivedEvent.detail).toEqual({ mph: 88 });
+  });
+
+  it('spyOnEvent, toHaveReceivedEventTimes', async () => {
     const page = await newE2EPage({ html: `
       <event-cmp></event-cmp>
     `});
@@ -106,7 +90,7 @@ describe('@Event', () => {
     await elm.callMethod('methodThatFiresEventWithOptions');
     await elm.callMethod('methodThatFiresEventWithOptions');
 
-    expect(elmEventSpy).toHaveCalledEventTimes(3);
+    expect(elmEventSpy).toHaveReceivedEventTimes(3);
   });
 
   it('element spyOnEvent', async () => {
@@ -117,13 +101,13 @@ describe('@Event', () => {
     const elm = await page.find('event-cmp');
     const elmEventSpy = await elm.spyOnEvent('my-event-with-options');
 
-    expect(elmEventSpy).not.toHaveCalledEvent();
+    expect(elmEventSpy).not.toHaveReceivedEvent();
 
     await elm.callMethod('methodThatFiresEventWithOptions');
 
     await page.waitForChanges();
 
-    expect(elmEventSpy).toHaveCalledEvent();
+    expect(elmEventSpy).toHaveReceivedEvent();
   });
 
   it('page spyOnEvent, default window', async () => {
@@ -138,7 +122,7 @@ describe('@Event', () => {
 
     await page.waitForChanges();
 
-    expect(eventSpy).toHaveCalledEventWith({ detail: 88 })
+    expect(eventSpy).toHaveReceivedEventDetail(88);
   });
 
   it('page spyOnEvent, set document selector', async () => {
@@ -153,7 +137,7 @@ describe('@Event', () => {
 
     await page.waitForChanges();
 
-    expect(eventSpy).toHaveCalledEventWith({ detail: 88 })
+    expect(eventSpy).toHaveReceivedEventDetail(88);
   });
 
 });

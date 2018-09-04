@@ -11,18 +11,39 @@ declare global {
 
       toHaveClass(expectClassName: string): void;
 
-      toHaveCalledEvent(): void;
-      toHaveCalledEventTimes(count: number): void;
-      toHaveCalledEventWith(eventInitDict: EventInitDict): void;
+      toHaveReceivedEvent(): void;
+      toHaveReceivedEventTimes(count: number): void;
+      toHaveReceivedEventDetail(eventInitDict: EventInitDict): void;
     }
   }
 }
 
 
 export interface EventSpy {
-  events: EventInitDict[];
+  events: SerializedEvent[];
   eventName: string;
-  isEventSpy: boolean;
+  firstEvent: SerializedEvent;
+  lastEvent: SerializedEvent;
+  length: number;
+}
+
+
+export interface SerializedEvent {
+  bubbles: boolean;
+  cancelBubble: boolean;
+  cancelable: boolean;
+  composed: boolean;
+  currentTarget: any;
+  defaultPrevented: boolean;
+  detail: any;
+  eventPhase: any;
+  isTrusted: boolean;
+  returnValue: any;
+  srcElement: any;
+  target: any;
+  timeStamp: number;
+  type: string;
+  isSerializedEvent: boolean;
 }
 
 
