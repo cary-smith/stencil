@@ -3,21 +3,34 @@
 declare global {
   namespace jest {
     interface Matchers<R> {
-      toBeChecked(): void;
-      toEqualHtml(html: string): void;
-      toEqualText(textContent: string): void;
+      toEqualHtml(expectHtml: string): void;
+      toEqualText(expectTextContent: string): void;
 
-      toHaveAttribute(attributeName: string): void;
-      toHaveAttributes(attributes: { [attr: string]: string }): void;
-      toMatchAttributes(attributes: { [attr: string]: string }): void;
+      toHaveAttribute(expectAttrName: string): void;
+      toEqualAttribute(expectAttrName: string, expectAttrValue: string): void;
 
-      toHaveClass(className: string): void;
-      toHaveClasses(classNames: string[]): void;
-      toMatchClasses(classNames: string[]): void;
+      toHaveClass(expectClassName: string): void;
 
-      toMatchProperties(properties: { [prop: string]: any }): void;
+      toHaveCalledEvent(): void;
+      toHaveCalledEventTimes(count: number): void;
+      toHaveCalledEventWith(eventInitDict: EventInitDict): void;
     }
   }
+}
+
+
+export interface EventSpy {
+  events: EventInitDict[];
+  eventName: string;
+  isEventSpy: boolean;
+}
+
+
+export interface EventInitDict {
+  bubbles?: boolean;
+  cancelable?: boolean;
+  composed?: boolean;
+  detail?: any;
 }
 
 

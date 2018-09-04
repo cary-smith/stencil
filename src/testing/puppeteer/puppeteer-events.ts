@@ -1,3 +1,4 @@
+import * as d from '../../declarations';
 import * as pd from './puppeteer-declarations';
 
 
@@ -10,38 +11,28 @@ export async function initE2EPageEvents(page: pd.E2EPageInternal) {
     nodeContextEvents(page._events, browserEvent);
   });
 
-  page.waitForEvent = (selector, eventName, opts = {}) => {
-    // NODE CONTEXT
-    return waitForEvent(page, selector, eventName, opts);
-  };
-
   await page.evaluateOnNewDocument(browserContextEvents);
 
-  page.spyOnEvent = spyOnEvent.bind(page, page);
-
+  page.spyOnEvent = pageSpyOnEvent.bind(page, page);
 }
 
 
-async function spyOnEvent(page: pd.E2EPageInternal, selector: string, eventName: string) {
-  const mockFn = jest.fn();
+async function pageSpyOnEvent(page: pd.E2EPageInternal, eventName: string, selector: 'window' | 'document') {
+  const eventSpy: d.EventSpy = {
+    eventName: eventName,
+    events: [],
+    isEventSpy: true
+  };
 
-  await addE2EListener(page, selector, eventName, (ev: CustomEvent) => {
-    mockFn(ev.detail);
+  if (selector !== 'document') {
+    selector = 'window';
+  }
+
+  await addE2EListener(page, selector, eventName, (ev: any) => {
+    eventSpy.events.push(ev);
   });
 
-  return mockFn;
-}
-
-
-export function waitForEvent(page: pd.E2EPageInternal, selector: string, eventName: string, opts: pd.WaitForEventOptions) {
-  // NODE CONTEXT
-  return new Promise<any>(async (resolve, reject) => {
-    const timeout = (typeof opts.timeout === 'number' ? opts.timeout : 30000);
-
-    const cancelRejectId = setTimeout(reject, timeout);
-
-    addE2EListener(page, selector, eventName, resolve, cancelRejectId);
-  });
+  return eventSpy;
 }
 
 

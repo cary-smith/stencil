@@ -1,3 +1,4 @@
+import * as d from '../../declarations';
 import * as pd from './puppeteer-declarations';
 import * as puppeteer from 'puppeteer';
 import { addE2EListener } from './puppeteer-events';
@@ -49,19 +50,23 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
   }
 
   async spyOnEvent(eventName: string) {
-    const mockFn = jest.fn();
+    const eventSpy: d.EventSpy = {
+      eventName: eventName,
+      events: [],
+      isEventSpy: true
+    };
 
     await addE2EListener(this.page, this.lightSelector, eventName, (ev: CustomEvent) => {
-      mockFn(ev.detail);
+      eventSpy.events.push(ev);
     });
 
-    return mockFn;
+    return eventSpy;
   }
 
-  triggerEvent(eventName: string, eventDetail?: any) {
+  triggerEvent(eventName: string, eventInitDict?: d.EventInitDict) {
     this.queuedActions.push({
       eventName: eventName,
-      eventDetail: eventDetail
+      eventInitDict: eventInitDict
     });
   }
 
@@ -145,7 +150,21 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
             (foundElm as any)[queuedAction.setPropertyName] = queuedAction.setPropertyValue;
 
           } else if (queuedAction.eventName) {
-            const ev = new CustomEvent(queuedAction.eventName, queuedAction.eventDetail);
+            const eventInitDict = queuedAction.eventInitDict || {};
+
+            if (typeof eventInitDict.bubbles !== 'boolean') {
+              eventInitDict.bubbles = true;
+            }
+
+            if (typeof eventInitDict.cancelable !== 'boolean') {
+              eventInitDict.cancelable = true;
+            }
+
+            if (typeof eventInitDict.composed !== 'boolean') {
+              eventInitDict.composed = true;
+            }
+
+            const ev = new CustomEvent(queuedAction.eventName, eventInitDict);
             foundElm.dispatchEvent(ev);
           }
         });
@@ -223,7 +242,7 @@ export class E2EElement extends MockElement implements pd.E2EElementInternal {
 }
 
 
-export async function getE2EElement(page: pd.E2EPageInternal, lightDomSelector: string) {
+export async function findE2EElement(page: pd.E2EPageInternal, lightDomSelector: string) {
   const elm = new E2EElement(page, lightDomSelector);
 
   await elm.e2eSync();
@@ -233,10 +252,10 @@ export async function getE2EElement(page: pd.E2EPageInternal, lightDomSelector: 
 
 
 interface ElementActions {
+  eventName?: string;
+  eventInitDict?: d.EventInitDict;
   methodName?: string;
   methodArgs?: any[];
-  eventName?: string;
-  eventDetail?: any;
   setPropertyName?: string;
   setPropertyValue?: any;
 }

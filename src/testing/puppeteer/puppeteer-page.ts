@@ -1,7 +1,7 @@
 import * as d from '../../declarations';
 import * as pd from './puppeteer-declarations';
 import { closePage } from './puppeteer-browser';
-import { getE2EElement } from './puppeteer-element';
+import { findE2EElement } from './puppeteer-element';
 import { initE2EPageEvents } from './puppeteer-events';
 import { initE2EPageScreenshot } from './puppeteer-screenshot';
 import * as puppeteer from 'puppeteer';
@@ -19,6 +19,8 @@ export async function newE2EPage(opts: pd.NewE2EPageOptions = {}): Promise<pd.E2
 
   page._elements = [];
 
+  page._goto = page.goto;
+
   await setPageEmulate(page as any);
 
   await page.setCacheEnabled(false);
@@ -27,17 +29,13 @@ export async function newE2EPage(opts: pd.NewE2EPageOptions = {}): Promise<pd.E2
 
   initE2EPageScreenshot(page);
 
-  page.find = async (lightDomSelector) => {
-    return await getE2EElement(page, lightDomSelector);
-  };
+  page.find = findE2EElement.bind(null, page);
 
   page.waitForChanges = waitForChanges.bind(null, page);
 
   page.on('console', consoleMessage);
   page.on('pageerror', pageError);
   page.on('requestfailed', requestFailed);
-
-  page._goto = page.goto;
 
   if (typeof opts.html === 'string') {
     await e2eSetContent(page, opts.html);
