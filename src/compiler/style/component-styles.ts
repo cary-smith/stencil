@@ -197,12 +197,18 @@ async function setStyleText(config: d.Config, compilerCtx: d.CompilerCtx, buildC
     styleMeta.compiledStyleText = await minifyStyle(config, compilerCtx, buildCtx.diagnostics, styleMeta.compiledStyleText, filePath);
   }
 
-  if (requiresScopedStyles(cmpMeta.encapsulationMeta)) {
+  if (requiresScopedStyles(cmpMeta.encapsulationMeta, config)) {
     // only create scoped styles if we need to
-    styleMeta.compiledStyleTextScoped = await scopeComponentCss(config, buildCtx, cmpMeta, modeName, styleMeta.compiledStyleText);
-    if (config.devMode) {
-      styleMeta.compiledStyleTextScoped = '\n' + styleMeta.compiledStyleTextScoped + '\n';
+    const compiledStyleTextScoped = await scopeComponentCss(config, buildCtx, cmpMeta, modeName, styleMeta.compiledStyleText);
+    styleMeta.compiledStyleTextScoped = compiledStyleTextScoped;
+    if (cmpMeta.encapsulationMeta === ENCAPSULATION.ScopedCss) {
+      styleMeta.compiledStyleText = compiledStyleTextScoped;
     }
+  }
+
+  // by default the compiledTextScoped === compiledStyleText
+  if (!styleMeta.compiledStyleTextScoped) {
+    styleMeta.compiledStyleTextScoped = styleMeta.compiledStyleText;
   }
 
   let addStylesUpdate = false;
@@ -228,10 +234,7 @@ async function setStyleText(config: d.Config, compilerCtx: d.CompilerCtx, buildC
   }
 
   styleMeta.compiledStyleText = escapeCssForJs(styleMeta.compiledStyleText);
-
-  if (styleMeta.compiledStyleTextScoped) {
-    styleMeta.compiledStyleTextScoped = escapeCssForJs(styleMeta.compiledStyleTextScoped);
-  }
+  styleMeta.compiledStyleTextScoped = escapeCssForJs(styleMeta.compiledStyleTextScoped);
 
   const styleMode = (modeName === DEFAULT_STYLE_MODE ? null : modeName);
 
@@ -276,8 +279,11 @@ export function escapeCssForJs(style: string) {
 }
 
 
-export function requiresScopedStyles(encapsulation: ENCAPSULATION) {
-  return (encapsulation === ENCAPSULATION.ScopedCss || encapsulation === ENCAPSULATION.ShadowDom);
+export function requiresScopedStyles(encapsulation: ENCAPSULATION, config: d.Config) {
+  return (
+    (encapsulation === ENCAPSULATION.ShadowDom && config.buildScoped) ||
+    (encapsulation === ENCAPSULATION.ScopedCss)
+  );
 }
 
 
