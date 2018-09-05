@@ -190,6 +190,7 @@ export interface ConfigFlags {
   cache?: boolean;
   channel?: string;
   checkVersion?: boolean;
+  ci?: boolean;
   compare?: boolean;
   config?: string;
   debug?: boolean;

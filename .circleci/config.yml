@@ -51,7 +51,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/stencil
-      - run: npm run test.example -- --maxWorkers=4
+      - run: npm run test.example --ci --debug -- --maxWorkers=4
 
   test_jest:
     <<: *defaults

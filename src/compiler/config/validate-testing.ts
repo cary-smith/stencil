@@ -8,10 +8,20 @@ export function validateTesting(config: d.Config) {
     return;
   }
 
-  if (config.flags && typeof config.flags.headless === 'boolean') {
+  if (typeof config.flags.headless === 'boolean') {
     testing.browserHeadless = config.flags.headless;
   } else if (typeof testing.browserHeadless !== 'boolean') {
     testing.browserHeadless = true;
+  }
+
+  if (config.flags.ci) {
+    testing.browserArgs = testing.browserArgs || [];
+    if (!testing.browserArgs.includes('--no-sandbox')) {
+      testing.browserArgs.push('--no-sandbox');
+    }
+    if (!testing.browserArgs.includes('--disable-setuid-sandbox')) {
+      testing.browserArgs.push('--disable-setuid-sandbox');
+    }
   }
 
   const path = config.sys.path;

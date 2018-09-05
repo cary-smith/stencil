@@ -132,7 +132,6 @@ const JEST_ARGS = [
   '--cache',
   '--changedFilesWithAncestor',
   '--changedSince',
-  '--ci',
   '--clearCache',
   '--collectCoverageFrom=',
   '--colors',

@@ -42,4 +42,20 @@ describe('validateTesting', () => {
     expect(config.testing.browserHeadless).toBe(true);
   });
 
+  it('default to no-sandbox browser args with ci flag', () => {
+    config.flags.e2e = true;
+    config.flags.ci = true;
+    validateConfig(config);
+    expect(config.testing.browserArgs).toEqual([
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ]);
+  });
+
+  it('default to no browser args', () => {
+    config.flags.e2e = true;
+    validateConfig(config);
+    expect(config.testing.browserArgs).toEqual(undefined);
+  });
+
 });

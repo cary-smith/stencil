@@ -110,6 +110,12 @@ describe('parseFlags', () => {
     expect(flags.cache).toBe(null);
   });
 
+  it('should parse --ci', () => {
+    process.argv[2] = '--ci';
+    const flags = parseFlags(process);
+    expect(flags.ci).toBe(true);
+  });
+
   it('should parse --compare', () => {
     process.argv[2] = '--compare';
     const flags = parseFlags(process);

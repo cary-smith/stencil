@@ -131,6 +131,7 @@ const ARG_OPTS = {
   boolean: [
     'cache',
     'check-version',
+    'ci',
     'compare',
     'debug',
     'dev',
