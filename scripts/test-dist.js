@@ -84,12 +84,14 @@ function testPackage(testPkg) {
       'jest.setuptest.js'
     ],
     exports: [
-      'JestEnvironment',
+      'applyWindowToGlobal',
+      'createJestPuppeteerEnvironment',
+      'h',
       'jestPreprocessor',
       'jestSetupTestFramework',
       'mockDocument',
       'mockWindow',
-      'newTestPage',
+      'newE2EPage',
       'Testing',
       'transpile'
     ]
