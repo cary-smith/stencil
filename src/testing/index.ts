@@ -2,6 +2,7 @@
 export { applyWindowToGlobal } from './mock-doc';
 export { createJestPuppeteerEnvironment } from './jest/jest-environment';
 export { E2EPage } from './puppeteer/puppeteer-declarations';
+export { h } from '../renderer/vdom/h';
 export { jestPreprocessor } from './jest/jest-preprocessor';
 export { jestSetupTestFramework } from './jest/jest-setup-test';
 export { newE2EPage } from './puppeteer/puppeteer-page';

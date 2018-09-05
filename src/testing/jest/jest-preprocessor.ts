@@ -1,6 +1,6 @@
 import * as d from '../../declarations';
+import { transpile } from '../test-transpile';
 import * as ts from 'typescript';
-const testing = require('./index.js');
 
 
 export const jestPreprocessor = {
@@ -24,7 +24,7 @@ export const jestPreprocessor = {
         opts.esModuleInterop = true;
       }
 
-      const results = testing.transpile(sourceText, opts, filePath);
+      const results = transpile(sourceText, opts, filePath);
       if (results.diagnostics && results.diagnostics.length > 0) {
         const msg = results.diagnostics.map(formatDiagnostics).join('\n\n');
         throw new Error(msg);
