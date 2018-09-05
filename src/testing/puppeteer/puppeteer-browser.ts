@@ -16,8 +16,8 @@ export async function startPuppeteerBrowser(config: d.Config) {
 
   config.logger.debug(`puppeteer headless: ${config.testing.browserHeadless}`);
 
-  if (config.testing.browserArgs) {
-    config.logger.debug(`puppeteer args: ${config.testing.browserArgs}`);
+  if (Array.isArray(config.testing.browserArgs)) {
+    config.logger.debug(`puppeteer args: ${config.testing.browserArgs.join(' ')}`);
   }
 
   if (config.testing.browserSlowMo) {

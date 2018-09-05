@@ -52,6 +52,14 @@ describe('validateTesting', () => {
     ]);
   });
 
+  it('force headless with ci flag', () => {
+    config.flags.e2e = true;
+    config.flags.headless = false;
+    config.flags.ci = true;
+    validateConfig(config);
+    expect(config.testing.browserHeadless).toBe(true);
+  });
+
   it('default to no browser args', () => {
     config.flags.e2e = true;
     validateConfig(config);

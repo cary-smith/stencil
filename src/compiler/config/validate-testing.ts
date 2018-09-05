@@ -22,6 +22,8 @@ export function validateTesting(config: d.Config) {
     if (!testing.browserArgs.includes('--disable-setuid-sandbox')) {
       testing.browserArgs.push('--disable-setuid-sandbox');
     }
+
+    testing.browserHeadless = true;
   }
 
   const path = config.sys.path;
