@@ -22,7 +22,7 @@ aliases:
 defaults: &defaults
   working_directory: ~/stencil
   docker:
-    - image: circleci/node:8.5
+    - image: circleci/node:latest-browsers
 
 jobs:
   build:

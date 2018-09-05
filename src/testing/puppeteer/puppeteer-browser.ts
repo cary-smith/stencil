@@ -20,8 +20,8 @@ export async function startPuppeteerBrowser(config: d.Config) {
     config.logger.debug(`puppeteer args: ${config.testing.browserArgs.join(' ')}`);
   }
 
-  if (config.testing.browserSlowMo) {
-    config.logger.debug(`puppeteer slowMo: ${config.testing.browserArgs}`);
+  if (typeof config.testing.browserSlowMo === 'number') {
+    config.logger.debug(`puppeteer slowMo: ${config.testing.browserSlowMo}`);
   }
 
   const launchOpts: puppeteer.LaunchOptions = {
