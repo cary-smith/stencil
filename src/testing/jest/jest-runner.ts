@@ -23,7 +23,7 @@ export async function runJest(config: d.Config, jestConfigPath: string, doScreen
 }
 
 
-export async function runJestDevice(config: d.Config, jestConfigPath: string, screenshotEmulate: d.ScreenshotEmulate) {
+export async function runJestDevice(config: d.Config, jestConfigPath: string, screenshotEmulate: d.EmulateConfig) {
   const jestPkgJsonPath = config.sys.resolveModule(config.rootDir, 'jest');
   const jestPkgJson: d.PackageJsonData = require(jestPkgJsonPath);
   const jestBinModule = path.join(normalizePath(path.dirname(jestPkgJsonPath)), jestPkgJson.bin.jest);
@@ -76,8 +76,12 @@ export async function setupJestConfig(config: d.Config) {
 
   config.logger.debug(`jest config: ${jestConfigPath}`);
 
-  const jestConfig = Object.assign({}, config.testing);
-  delete jestConfig.emulate;
+  const jestConfig: any = {};
+  Object.keys(config.testing).forEach(testingConfig => {
+    if (JEST_CONFIG.includes(testingConfig)) {
+      jestConfig[testingConfig] = (config.testing as any)[testingConfig];
+    }
+  });
 
   await config.sys.fs.writeFile(
     jestConfigPath,
@@ -86,6 +90,16 @@ export async function setupJestConfig(config: d.Config) {
 
   return jestConfigPath;
 }
+
+const JEST_CONFIG = [
+  'moduleFileExtensions',
+  'setupTestFrameworkScriptFile',
+  'testEnvironment',
+  'testMatch',
+  'testPathIgnorePatterns',
+  'testRegex',
+  'transform'
+];
 
 
 const STENCIL_JEST_CONFIG = '.stencil.jest.config.json';

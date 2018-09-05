@@ -97,9 +97,29 @@ export interface Testing {
 
 
 export interface TestingConfig {
-  emulate?: ScreenshotEmulate[];
+  /**
+   * Additional arguments to pass to the browser instance.
+   */
+  browserArgs?: string[];
+
+  /**
+   * Whether to run browser e2e tests in headless mode. Defaults to true.
+   */
+  browserHeadless?: boolean;
+
+  /**
+   * Slows down e2e browser operations by the specified amount of milliseconds.
+   * Useful so that you can see what is going on.
+   */
+  browserSlowMo?: number;
+
+  /**
+   * Array of browser emulations to be using during e2e tests. A full e2e
+   * test is ran for each emulation.
+   */
+  emulate?: EmulateConfig[];
+
   moduleFileExtensions?: string[];
-  reporters?: string[];
   setupTestFrameworkScriptFile?: string;
   testEnvironment?: string;
   testMatch?: string[];
@@ -109,7 +129,7 @@ export interface TestingConfig {
 }
 
 
-export interface ScreenshotEmulate {
+export interface EmulateConfig {
   /**
    * Predefined device descriptor name, such as "iPhone X" or "Nexus 10".
    * For a complete list please see: https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js

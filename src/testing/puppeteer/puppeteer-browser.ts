@@ -14,9 +14,21 @@ export async function startPuppeteerBrowser(config: d.Config) {
   env.__STENCIL_PUPPETEER_MODULE__ = puppeteerModulePath;
   config.logger.debug(`puppeteer: ${puppeteerModulePath}`);
 
+  config.logger.debug(`puppeteer headless: ${config.testing.browserHeadless}`);
+
+  if (config.testing.browserArgs) {
+    config.logger.debug(`puppeteer args: ${config.testing.browserArgs}`);
+  }
+
+  if (config.testing.browserSlowMo) {
+    config.logger.debug(`puppeteer slowMo: ${config.testing.browserArgs}`);
+  }
+
   const launchOpts: puppeteer.LaunchOptions = {
     ignoreHTTPSErrors: true,
-    headless: false
+    args: config.testing.browserArgs,
+    headless: config.testing.browserHeadless,
+    slowMo: config.testing.browserSlowMo
   };
 
   const browser = await puppeteer.launch(launchOpts);

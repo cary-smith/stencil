@@ -70,7 +70,7 @@ export async function writeE2EScreenshot(screenshot: Buffer, uniqueDescription: 
     await writeFile(imagePath, screenshot);
   }
 
-  const screenshotEmulate = JSON.parse(env.__STENCIL_EMULATE__) as d.ScreenshotEmulate;
+  const screenshotEmulate = JSON.parse(env.__STENCIL_EMULATE__) as d.EmulateConfig;
 
   const id = getTestId(screenshotEmulate, uniqueDescription);
 
@@ -291,7 +291,7 @@ function getRepoUrl(env: d.E2EProcessEnv) {
 }
 
 
-function getTestId(screenshotEmulate: d.ScreenshotEmulate, uniqueDescription: string) {
+function getTestId(screenshotEmulate: d.EmulateConfig, uniqueDescription: string) {
   const hash = crypto.createHash('md5');
 
   hash.update(uniqueDescription);

@@ -2,8 +2,8 @@ import * as d from '../../declarations';
 import * as puppeteer from 'puppeteer';
 
 
-export async function setScreenshotEmulateData(userEmulateConfig: d.ScreenshotEmulate, env: d.E2EProcessEnv) {
-  const screenshotEmulate: d.ScreenshotEmulate = {
+export async function setScreenshotEmulateData(userEmulateConfig: d.EmulateConfig, env: d.E2EProcessEnv) {
+  const screenshotEmulate: d.EmulateConfig = {
     width: 800,
     height: 600,
     deviceScaleFactor: 1,

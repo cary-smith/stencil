@@ -225,6 +225,18 @@ describe('parseFlags', () => {
     expect(flags.help).toBe(true);
   });
 
+  it('should parse --no-headless', () => {
+    process.argv[2] = '--no-headless';
+    const flags = parseFlags(process);
+    expect(flags.headless).toBe(false);
+  });
+
+  it('should parse --headless', () => {
+    process.argv[2] = '--headless';
+    const flags = parseFlags(process);
+    expect(flags.headless).toBe(true);
+  });
+
   it('should parse --log-level', () => {
     process.argv[2] = '--log-level';
     process.argv[3] = 'error';

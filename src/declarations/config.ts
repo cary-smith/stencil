@@ -198,6 +198,7 @@ export interface ConfigFlags {
   docsJson?: string;
   e2e?: boolean;
   es5?: boolean;
+  headless?: boolean;
   help?: boolean;
   log?: boolean;
   logLevel?: string;

@@ -137,6 +137,7 @@ const ARG_OPTS = {
     'docs',
     'e2e',
     'es5',
+    'headless',
     'help',
     'log',
     'open',

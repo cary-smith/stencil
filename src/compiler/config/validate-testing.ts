@@ -8,6 +8,12 @@ export function validateTesting(config: d.Config) {
     return;
   }
 
+  if (config.flags && typeof config.flags.headless === 'boolean') {
+    testing.browserHeadless = config.flags.headless;
+  } else if (typeof testing.browserHeadless !== 'boolean') {
+    testing.browserHeadless = true;
+  }
+
   const path = config.sys.path;
 
   if (!Array.isArray(testing.moduleFileExtensions)) {

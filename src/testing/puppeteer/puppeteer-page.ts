@@ -174,7 +174,7 @@ async function setPageEmulate(page: puppeteer.Page) {
   }
 
   try {
-    const screenshotEmulate = JSON.parse(emulateJsonContent) as d.ScreenshotEmulate;
+    const screenshotEmulate = JSON.parse(emulateJsonContent) as d.EmulateConfig;
 
     const emulateOptions: puppeteer.EmulateOptions = {
       viewport: {
