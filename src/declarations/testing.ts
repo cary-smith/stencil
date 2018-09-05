@@ -8,8 +8,10 @@ declare global {
 
       toHaveAttribute(expectAttrName: string): void;
       toEqualAttribute(expectAttrName: string, expectAttrValue: string): void;
+      toEqualAttributes(expectAttrs: {[attrName: string]: any}): void;
 
       toHaveClass(expectClassName: string): void;
+      toHaveClasses(expectClassNames: string[]): void;
 
       toHaveReceivedEvent(): void;
       toHaveReceivedEventTimes(count: number): void;
